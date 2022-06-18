@@ -1,0 +1,111 @@
+{% extends 'navbar.html' %} 
+
+{% block content %}
+<h1 class="header">  Choose the modality</h1>
+<br/>
+
+<div class="btn-form">
+    <form class="row g-3" method= "post" action='{{ url_for("listIssues") }}'>
+        <input value="all" name="type" hidden>
+        <button class="button" type="submit" >All</button>
+    </form>
+    <form class="row g-3" method= "post" action='{{ url_for("listIssuesCreated") }}'>
+        <input value="created" name="type" hidden>
+        <button class="button" type="submit" >Created</button>
+    </form>
+    <form class="row g-3" method= "post" action='{{ url_for("listIssuesNotAssigned") }}'>
+        <input value="notassigned" name="type" hidden>
+        <button class="button" type="submit" >Not Assigned</button>
+    </form>
+    <form class="row g-3" method= "post" action='{{ url_for("listIssuesAssigned") }}'>
+        <input value="assigned" name="type" hidden>
+        <button class="button" type="submit" >Assigned</button>
+    </form>
+    <form class="row g-3" method= "post" action='{{ url_for("listIssuesAccepted") }}'>
+        <input value="accepted" name="type" hidden>
+        <button class="button" type="submit" >Accepted</button>
+    </form>
+    <form class="row g-3" method= "post" action='{{ url_for("listIssuesCompleted") }}'>
+        <input value="completed" name="type" hidden>
+        <button class="button" type="submit" >Completed</button>
+    </form>
+</div>
+<h1 class="header"> CREATED</h1>
+<br/>
+<br/>
+<ol>
+    <!-- For loop logic of jinja template -->
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">WorkSpace</th>
+            <th scope="col">Creator</th>           
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+    {%for i in range(0, len)%}
+    <tr>
+        <td>{{issues[i][1]}}</td> <!-- Name -->
+        <td>{{arrayWS[i]}}</td> <!-- Workspace -->
+        <td>{{arrayCreator[i]}}</td> <!-- Creator --> 
+        <td>{{issues[i][4]}}</td><!-- Date -->
+        <td><form class="row g-3" method= "post" action='{{ url_for("issueProposer") }}'>
+            <input name="id" value="{{issues[i][0]}}" hidden>
+            <button class="btn btn-outline-danger" type="submit" >Propose</button>
+        </form></td>
+    </tr>
+
+        
+    {%endfor%}
+</tbody>
+</table>
+    </ol>
+    <style>
+        .header{
+            text-align: center;
+        }
+        
+        .btn-form{
+            text-align: center;
+            margin: 30 px;
+            font-size: 22 px;
+            display: flex;
+            justify-content: space-between;
+        
+        }
+        
+        .btn-form .button {
+            margin: 12;
+            padding: 16 48 ;
+            font-size: 22 ;
+            background-color: rgb(255, 255, 255);
+            transition-duration: 0.5s;
+        
+        }
+        
+        .btn-form .button:hover {
+            margin: 12;
+            padding: 16 48 ;
+            font-size: 22 ;
+            background-color: #76b852;
+            color: rgb(255, 255, 255);
+        
+        
+        }
+        
+        
+        .btn-form .button:focus {
+            margin: 12;
+            padding: 16 48 ;
+            font-size: 22 ;
+            background-color: #da2818c7;
+            color: rgb(0, 0, 0);
+        
+        
+        }
+        
+        </style>
+{% endblock %}
+

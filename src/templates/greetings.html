@@ -1,0 +1,56 @@
+{% extends 'navbar.html' %} 
+
+{% block content %}
+<div class="div1">
+  <img src="https://image.shutterstock.com/image-vector/issue-concept-people-letters-icons-260nw-1472135615.jpg"> </img>
+  <p> WELCOME {{name}} {{surname}}! YOUR USER EMAIL IS {{email}} </p>
+  <p>
+    myIssues is a interactive page between clients and workers of myIssues creted to solve all the incidents that can happen in your computer. In this page you can add
+    a Issue that is currently occurred in your computer and a worker of this company will resolve it for you allowing you to continue with your daily basics works on your pc.        </p>
+
+</div>
+{% endblock %} 
+        <style>
+
+
+          p {
+              margin: 100 200 0 200;
+              font-size: x-large;
+          }
+          .div1{
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: space-between;
+          }
+          .navbar{
+            background: #76b852;
+            font-family: "Roboto", sans-serif;
+            color:black
+          }
+          .dropdown-toogle{
+            color: black;
+          }
+          .navbar-inverse .navbar-brand {
+            color: #000000;
+          }
+          .navbar-inverse .navbar-nav>li>a {
+            color: #000000;
+          }
+          .navbar-btn {
+            margin-top: 8px;
+            margin-bottom: 8px;
+            margin-right: 14px;
+          }
+          .navbar-inverse .navbar-nav>.open>a, .navbar-inverse .navbar-nav>.open>a:focus, .navbar-inverse .navbar-nav>.open>a:hover {
+          color: #fff;
+          background-color: #36952b;
+          }
+          .navbar-inverse .navbar-brand {
+            color: #000000;
+            font-size: 24px;
+          }
+        </style>
+  
+
+  

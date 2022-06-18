@@ -1,0 +1,81 @@
+{% extends 'navbar.html' %} 
+
+{% block content %}
+
+<h1 class="header">  Issue History </h1>
+<h1 class="header">{{issueName}}</h1>
+<ol>
+    <!-- For loop logic of jinja template -->
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Type</th>
+            <th scope="col">Creator</th>
+            <th scope="col">Content</th>
+            <th scope="col">Assigned</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+    {%for i in range(0, len)%}
+    <tr>
+        <td>{{issues[i][0]}}</td>
+        <td>{{arrayCreator[i]}}</td>
+        <td>{{issues[i][2]}}</td>
+        <td>{{issues[i][3]}}</td>
+        <td>{{issues[i][4]}}</td>
+
+    </tr>
+
+        
+    {%endfor%}
+</tbody>
+</table>
+    </ol>
+    <style>
+        .header{
+            text-align: center;
+        }
+        
+        .btn-form{
+            text-align: center;
+            margin: 30 px;
+            font-size: 22 px;
+            display: flex;
+            justify-content: space-between;
+        
+        }
+        
+        .btn-form .button {
+            margin: 12;
+            padding: 16 48 ;
+            font-size: 22 ;
+            background-color: rgb(255, 255, 255);
+            transition-duration: 0.5s;
+        
+        }
+        
+        .btn-form .button:hover {
+            margin: 12;
+            padding: 16 48 ;
+            font-size: 22 ;
+            background-color: #76b852;
+            color: rgb(255, 255, 255);
+        
+        
+        }
+        
+        
+        .btn-form .button:focus {
+            margin: 12;
+            padding: 16 48 ;
+            font-size: 22 ;
+            background-color: #da2818c7;
+            color: rgb(0, 0, 0);
+        
+        
+        }
+        
+        </style>
+{% endblock %}
+

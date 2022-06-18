@@ -1,0 +1,40 @@
+{% extends 'navbar.html' %} 
+
+{% block content %}
+<div class= "form">
+
+  <form class="row g-3" method= "post" action='{{ url_for("registerUser") }}'>
+      <div class="col-md-6">
+      <label for="inputEmail4" class="form-label">Email</label>
+      <input type="text" class="form-control"  name="email" autocomplete="off">
+      </div>
+      <div class="col-md-6">
+      <label for="inputPassword4" class="form-label">Password</label>
+      <input type="password" class="form-control" name="password" autocomplete="off">
+      </div>
+      <div class="col-12">
+      <label for="inputAddress" class="form-label">Name</label>
+      <input type="text" class="form-control" name="name" autocomplete="off">
+      </div>
+      <div class="col-12">
+      <label for="inputAddress2" class="form-label">Surname</label>
+      <input type="text" class="form-control"  name= "surname" autocomplete="off">
+      </div>
+      <br>
+      <div class="col-12">
+      <button type="submit" class="btn ">Add</button>
+      </div>
+  </form>
+</div>
+<div class="flash">
+  {% if succes %}
+  {% if error %}
+    <p style=" text-align: center" > ERROR , {{json}} </p>
+
+{% else %}
+    <p style=" text-align: center"> {{json}}</p>
+{% endif %}
+{% endif %}
+{% endblock %}
+</div>
+
