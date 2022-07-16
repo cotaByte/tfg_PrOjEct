@@ -14,7 +14,7 @@ def getCursor(con):                                                         # Me
 
 def setConnection():
     try:
-        con = sqlite3.connect('myissues.db')
+        con = sqlite3.connect('database.db')
         return con
     except Error:
         print(Error)
@@ -141,31 +141,45 @@ def getIdFromEmail(email):                                                      
 
 def getUserNameFromid(id):                                                      # get the id of the user by his email
     con = setConnection()
-    query= "SELECT name FROM Users WHERE id= '%s'" %(id)
+    query= "SELECT nombre FROM Miembro WHERE id= '%s'" %(id)
     c = getCursor(con)
     c.execute(query)
-    name = c.fetchone()
-    if name is not None:
-        name = name[0]
+    nombre = c.fetchone()
+    if nombre is not None:
+        nombre = nombre[0]
     con.close()
-    if(name  == None):
+    if(nombre  == None):
         return None
     else:
-        return name
+        return nombre
 
-def getUserSurnameFromid(id):                                                      # get the id of the user by his email
+def getUserSurname1Fromid(id):                                                      # get the id of the user by his email
     con = setConnection()
-    query= "SELECT surname FROM Users WHERE id= '%s'" %(id)
+    query= "SELECT apellido1 FROM Miembro WHERE id= '%s'" %(id)
     c = getCursor(con)
     c.execute(query)
-    name = c.fetchone()
-    if name is not None:
-        name = name[0]
+    apellido1 = c.fetchone()
+    if apellido1 is not None:
+        apellido1 = apellido1[0]
     con.close()
-    if(name  == None):
+    if(apellido1  == None):
         return None
     else:
-        return name
+        return apellido1
+
+def getUserSurname2Fromid(id):                                                      # get the id of the user by his email
+    con = setConnection()
+    query= "SELECT apellido2 FROM Miembro WHERE id= '%s'" %(id)
+    c = getCursor(con)
+    c.execute(query)
+    apellido2 = c.fetchone()
+    if apellido2 is not None:
+        apellido2 = apellido2[0]
+    con.close()
+    if(apellido2  == None):
+        return None
+    else:
+        return apellido2
 
 def getUserEmailFromid(id):                                                      # get the id of the user by his email
     con = setConnection()

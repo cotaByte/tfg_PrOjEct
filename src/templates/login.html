@@ -11,8 +11,9 @@
       </form>
       <h1> Log In</h1>
       <form class="login-form" method="post" action='{{url_for("login")}}'>
-        <input type="text" placeholder="nif" name="nif" autocomplete="off"/>
-        <input type="password" placeholder="pin" name="pin" autocomplete="off"/>
+
+        <input type="text" placeholder="nif" name="nif" autocomplete="off" required/>
+        <input type="password" placeholder="pin" name="pin" autocomplete="off" required/>
         <button type="submit">log in</button>
         <br></br>
       </form>

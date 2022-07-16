@@ -1,40 +1,91 @@
-{% extends 'navbar.html' %} 
+<head>
+  {% extends 'navbar.html' %}
+</head>
 
-{% block content %}
-<div class= "form">
-
-  <form class="row g-3" method= "post" action='{{ url_for("registerUser") }}'>
+<div class="form">
+  {% block content %}
+  <form class="row g-3" method="post" action='{{ url_for("registerUser") }}'>
+    <div class="col-md-6">
+      <label for="inputEmail4" class="form-label">NIF</label>
+      <input
+        type="text"
+        class="form-control"
+        name="nif"
+        placeholder="NIF"
+        autocomplete="off"
+      />
+    </div>
+    <div class="col-md-6">
+      <label for="inputEmail4" class="form-label">Nombre</label>
+      <input
+        type="text"
+        class="form-control"
+        name="nombre"
+        placeholder="Nombre"
+        autocomplete="off"
+      />
+    </div>
+    <div class="col-md-6">
+      <label for="inputEmail4" class="form-label">1º Apellido</label>
+      <input
+        type="text"
+        class="form-control"
+        name="apellido1"
+        placeholder="Primer Apellido"
+        autocomplete="off"
+      />
+    </div>
+    <div class="col-md-6">
+      <label for="inputEmail4" class="form-label">2º Apellido</label>
+      <input
+        type="text"
+        class="form-control"
+        name="apellido2"
+        placeholder="Segundo Apellido"
+        autocomplete="off"
+      />
+    </div>
+    <div class="col-md-6">
+      <label for="inputEmail4" class="form-label">Instrumento</label>
+      <input
+        type="text"
+        class="form-control"
+        name="instrumento"
+        placeholder="Instrumento"
+        autocomplete="off"
+      />
       <div class="col-md-6">
-      <label for="inputEmail4" class="form-label">Email</label>
-      <input type="text" class="form-control"  name="email" autocomplete="off">
+        <label for="inputEmail4" class="form-label">Telefono</label>
+        <input
+          type="text"
+          class="form-control"
+          name="tlf"
+          placeholder="Telefono"
+          autocomplete="off"
+        />
       </div>
-      <div class="col-md-6">
-      <label for="inputPassword4" class="form-label">Password</label>
-      <input type="password" class="form-control" name="password" autocomplete="off">
-      </div>
-      <div class="col-12">
-      <label for="inputAddress" class="form-label">Name</label>
-      <input type="text" class="form-control" name="name" autocomplete="off">
-      </div>
-      <div class="col-12">
-      <label for="inputAddress2" class="form-label">Surname</label>
-      <input type="text" class="form-control"  name= "surname" autocomplete="off">
-      </div>
-      <br>
-      <div class="col-12">
-      <button type="submit" class="btn ">Add</button>
-      </div>
+    </div>
+    <div class="col-md-6">
+      <label for="inputPassword4" class="form-label">PIN</label>
+      <input
+        placeholder="PIN"
+        type="password"
+        required=" True"
+        class="form-control"
+        name="pin"
+        autocomplete="off"
+      />
+    <br />
+    <div class="col-12">
+      <button type="submit" class="btn">Añadir</button>
+    </div>
   </form>
 </div>
 <div class="flash">
-  {% if succes %}
-  {% if error %}
-    <p style=" text-align: center" > ERROR , {{json}} </p>
+  {% if succes %} {% if error %}
+  <p style="text-align: center">ERROR , {{json}}</p>
 
-{% else %}
-    <p style=" text-align: center"> {{json}}</p>
-{% endif %}
-{% endif %}
-{% endblock %}
+  {% else %}
+  <p style="text-align: center">{{json}}</p>
+  {% endif %} {% endif %} {% endblock %}
 </div>
-

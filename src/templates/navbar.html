@@ -6,13 +6,23 @@
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
     />
-    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+      integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <header>
@@ -29,7 +39,6 @@
               <ul class="dropdown-menu">
                 <li><a href="/addUser">Add a User</a></li>
                 <li><a href="/listUsers">List all Users</a></li>
-                <!-- <li><a href="#">Remove a User</a></li> -->
               </ul>
             </li>
             <li class="dropdown">
@@ -37,7 +46,7 @@
                 >Workspaces <span class="caret"></span
               ></a>
               <ul class="dropdown-menu">
-                <li><a href="/addWorkspace">Add a Workspace</a></li> 
+                <li><a href="/addWorkspace">Add a Workspace</a></li>
                 <li><a href="/listWorkspace">List all Workspaces</a></li>
                 <li><a href="/join">Join a Workspace</a></li>
                 <li><a href="/leave">Leave a Workspaces</a></li>
@@ -55,16 +64,20 @@
             </li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
-            <a href="/"><li>
-              <form method= "post" action='{{ url_for("logout") }}'>
-                <button type="submit" class="btn btn-danger navbar-btn">Log Out</button>
-              </form>
-            </li></a>
+            <a href="/"
+              ><li>
+                <form method="post" action='{{ url_for("logout") }}'>
+                  <button type="submit" class="btn btn-danger navbar-btn">
+                    Log Out
+                  </button>
+                </form>
+              </li></a
+            >
           </ul>
         </div>
       </nav>
     </header>
-    <div class="container">{% block content %} {% endblock %}</div>
+    <!-- <div class="container">{% block content %} {% endblock %}</div> -->
     <style>
       p {
         margin: 100 200 0 200;
@@ -106,54 +119,54 @@
         font-size: 24px;
       }
       .navbar-nav {
-    float: left;
-    margin: 12 12 12 65;
-    font-size: 26;
-    }
-    .container-fluid>.navbar-header, .container>.navbar-collapse, .container>.navbar-header {
-    margin: 12 12 21 21;
-    }
-    .navbar>.container-fluid .navbar-brand {
-    margin-left: -15px;
-    font-size: 26;
-    }
-  .container-fluid {
-    padding-right: 15px;
-    padding-left: 15px;
-    padding-top: 12px;
-    margin-right: auto;
-    margin-left: auto;
-  }
-  .btn {
-    display: inline-block;
-    margin-bottom: 0;
-    font-weight: 400;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
-    -ms-touch-action: manipulation;
-    touch-action: manipulation;
-    cursor: pointer;
-    background-image: none;
-    border: 1px
- solid transparent;
-    padding: 6px 12px;
-    font-size: 22;
-    line-height: 1.42857143;
-    border-radius: 4px;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-}
+        float: left;
+        margin: 12 12 12 65;
+        font-size: 26;
+      }
+      .container-fluid > .navbar-header,
+      .container > .navbar-collapse,
+      .container > .navbar-header {
+        margin: 12 12 21 21;
+      }
+      .navbar > .container-fluid .navbar-brand {
+        margin-left: -15px;
+        font-size: 26;
+      }
+      .container-fluid {
+        padding-right: 15px;
+        padding-left: 15px;
+        padding-top: 12px;
+        margin-right: auto;
+        margin-left: auto;
+      }
+      .btn {
+        display: inline-block;
+        margin-bottom: 0;
+        font-weight: 400;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: middle;
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+        cursor: pointer;
+        background-image: none;
+        border: 1px solid transparent;
+        padding: 6px 12px;
+        font-size: 22;
+        line-height: 1.42857143;
+        border-radius: 4px;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
 
-.navbar-nav>li>.dropdown-menu {
-    margin-top: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    font-size: 22px;
-}
-    
+      .navbar-nav > li > .dropdown-menu {
+        margin-top: 0;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        font-size: 22px;
+      }
     </style>
   </body>
 </html>
