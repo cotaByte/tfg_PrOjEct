@@ -1,28 +1,36 @@
 from ctypes.wintypes import PINT
+from curses import resetty
+from mailbox import NoSuchMailboxError
 from re import T, X
 from readline import append_history_file
+from urllib import response
 from psutil import net_if_addrs
-from psycopg2 import apilevel
+import psycopg2
 import requests
 from datetime import date
 from os import strerror
 import socket,sqlite3,time,json,sys,threading, os, signal
 from _thread import *
-from sqlite3.dbapi2 import Date, Row
-from sqlite3 import Error
-from datetime import datetime
 from requests.sessions import RequestsCookieJar
 import auxMethods
 from flask import Flask, request, render_template, redirect
 
 app = Flask(__name__)
 
-def connection():
-    try:
-        con = sqlite3.connect('database.db')
+def connection(): # method for connecting to the database
+    try :
+        con = psycopg2.connect(
+
+            host= 'localhost',
+            user='postgres',
+            password='password',
+            database='xarangapp'
+        )
         return con
-    except Error:
-        print(Error)
+    except Exception as ex:
+        print(ex)
+
+
         
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/greetings', methods=["GET"])
@@ -58,14 +66,18 @@ def login(nif, pin):                                                           #
     con= connection()
     print(con)
     query = 'SELECT id, nif, pin, nombre FROM Miembro'
-    for row in auxMethods.getCursor(con).execute(query):
-            if(row[1] == int(nif) and str(row[2]) == str(pin) ):
-                    token= row[0]
+    c= auxMethods.getCursor(con)
+    c.execute(query)
+    for record in c:
+            if(record[1] == int(nif) and str(record[2]) == str(pin) ):
+                    token= record[0]
                     ret = json.dumps(token)
                     return ret  # with the return here, the loop stops when it smash the match (no innecesary iterations) 
     con.close()
     ret = json.dumps(token)
     return ret
+
+
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/addUser', methods =["POST"])
 def registerUser():
@@ -77,30 +89,68 @@ def registerUser():
         apellido1=array.get('apellido1')
         apellido2=array.get('apellido2')
         instrumento=array.get('instrumento')    
+        director = array.get('director')
+        banda = array.get('banda')
         tlf=  array.get('tlf')
         pin=array.get('pin')
-        return addUser(nif,nombre,apellido1,apellido2,instrumento,tlf,pin)
+        return addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin)
 
 
-def addUser(nif,nombre,apellido1,apellido2,instrumento,tlf,pin):                                     # Method for add a User to the database 
+def addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin):                                     # Method for add a User to the database 
     con = connection()
-    for row in auxMethods.getCursor(con).execute('SELECT nif FROM Miembro'):
-        if(row[0] ==nif):
-            print("HELLOO")
+    c= auxMethods.getCursor(con)
+    query = 'SELECT nif FROM Miembro'
+    c.execute(query)
+    for record in c:
+        if(record[0] ==nif):
             data =  "El usuario ya existe"
             ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
             return ret
-    id = lambda : str(round(time.time()*1000))  # Get a rabndom number for the id of the user if does not exist already use ord() to convert from ASCII  char to number added to id unique
-    print("lamda ok")
-    query = 'INSERT INTO Miembro (id,nif,nombre,apellido1,apellido2,instrumento,tlf,pin) VALUES (%s, "%s", "%s", "%s", "%s", "%s", "%s", "%s")'%(id,nif,nombre,apellido1,apellido2,instrumento,tlf,pin)
-   # test for the query to pass params {nif} {nombre}...
-    auxMethods.getCursor(con).execute(query)
+    id = lambda a : str(round(time.time()*1000)) if director== 0 else str(round(time.time()*1000)+"D")
+    print (id)
+     # Get timestampfor the id of the user
+
+    c.execute('INSERT INTO miembro (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, id_banda, director, pin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)'
+    ,(id(director),int(nif),nombre,apellido1,apellido2,int(instrumento),int(tlf),banda,director,int(pin)))
     con.commit()
     con.close()
     data = "Miembro añadido correctamente"
     ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
     return ret
 #/////////////////////////////////////////////////////////////////////////////////////////////////       
+@app.route('/addBanda', methods =[ "POST"])
+def registerBanda():
+    if (request.method== "POST"):
+        response= request.data
+        array=json.loads(response.decode('utf-8'))
+
+        nombre= array.get('nombre')
+        poblacion = array.get('poblacion')
+
+        return addBanda(nombre,poblacion)
+
+
+def addBanda(nombre,poblacion):
+    con = connection()
+    c= auxMethods.getCursor(con)
+    query = 'SELECT nombre FROM Banda'
+    c.execute(query)
+    for record in c:
+        if (record[0] == nombre):
+            data =  "Esta banda ya se encuentra registrada"
+            ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
+            return ret
+    id = str(round(time.time()*1000))
+    c.execute('INSERT INTO banda (id_banda, nombre, poblacion) VALUES (%s, %s, %s) ', (id, nombre, poblacion ))
+    con.commit()
+    con.close()
+    data = "Miembro añadido correctamente"
+    ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
+    return ret
+
+        
+
+
 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

@@ -5,6 +5,7 @@ import re
 from flask import Flask, request, render_template, redirect,url_for, flash, session, abort, jsonify
 import requests, json
 from werkzeug import datastructures
+import auxMethods
 # Flask constructor
 
 token = None
@@ -22,13 +23,8 @@ host = 'localhost'
 def login():
 	global token
 	if request.method == "POST":
-		nif = request.form.get("nif")
-		pin = request.form.get("pin")
-		data = {
-			"nif": nif, 
-			"pin": pin,
-    	}
-
+		data= auxMethods.setObject4Server(request.form,"nif" ,"pin")
+		print (data)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post('http://'+host+':5000/login', json=data, verify=False, headers=headers)
 		
@@ -68,26 +64,7 @@ def menu():
 def register():
 
 	if request.method == "POST":
-		nif = request.form.get("nif")
-		nombre = request.form.get("nombre")
-		apellido1 = request.form.get("apellido1")
-		apellido2 = request.form.get("apellido2")
-		instrumento = request.form.get("instrumento")
-		tlf = request.form.get("tlf")
-		pin = request.form.get("pin")
-	
-		
-		data = {
-			"nif": nif, 
-			"nombre":	 nombre,
-			"apellido1": apellido1,
-			"apellido2": apellido2,
-			"instrumento": instrumento,
-			"tlf": tlf,
-			"pin": pin,
-		}
-
-
+		data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","insturmento","tlf","pin")
 		headers = {'Content-Type': 'application/json'}
 
 		req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers)
@@ -103,26 +80,8 @@ def registerUser():
 		return redirect('/')
 	else:
 		error=""
-		data=""
 		if request.method == "POST":
-			nif = request.form.get("nif")
-			nombre = request.form.get("nombre")
-			apellido1 = request.form.get("apellido1")
-			apellido2 = request.form.get("apellido2")
-			instrumento = request.form.get("instrumento")
-			tlf = request.form.get("tlf")
-			pin = request.form.get("pin")
-		
-			
-			data = {
-				"nif": nif, 
-				"nombre":	 nombre,
-				"apellido1": apellido1,
-				"apellido2": apellido2,
-				"instrumento": instrumento,
-				"tlf": tlf,
-				"pin": pin,
-		}
+			data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","insturmento","tlf","pin")
 
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers )
@@ -133,6 +92,28 @@ def registerUser():
 			return render_template('addUser.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
 		return render_template('addUser.html', json=data, error=error,succes=False)
 		
+#/////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/addBanda', methods =["GET", "POST"])
+def registerBanda():
+	global token
+	if(token == None):
+			return redirect('/')
+	else:
+		error=""
+
+		if(request.method == 'POST'):
+			data= auxMethods.setObject4Server(request.form, "nombre", "poblacion")
+			headers = {'Content-Type': 'application/json'}
+			req = requests.post('http://'+host+':5000/addBanda', json=data, verify=False, headers=headers )
+			array=req.json()
+			error=array.get('error')
+			data=array.get('data')
+
+			return render_template('addBanda.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
+		return render_template('addBanda.html', json=data, error=error,succes=False)
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
+
+
+
 if __name__=='__main__':
 	app.run(debug=True, port=3000)

@@ -3,14 +3,14 @@
 {% block content %}
 <div class= "form">
 
-  <form class="row g-3" method= "post" action= "{{ url_for("registerWs") }}">
+  <form class="row g-3" method= "post" action= "{{ url_for("registerBanda") }}">
       <div class="col-md-6">
-      <label for="inputEmail4" class="form-label">Name</label>
-      <input type="text" class="form-control"  name= "name">
+      <label for="inputEmail4" class="form-label">Introduce el nombre de la banda</label>
+      <input type="text" class="form-control"  name= "nombre">
       </div>
       <div class="col-md-6">
-      <label for="inputPassword4" class="form-label">Description</label>
-      <input type="text" class="form-control" name= "description">
+      <label for="inputPassword4" class="form-label">¿Donde se situa esta banda? Poblacion</label>
+      <input type="text" class="form-control" name= "poblacion">
       </div>
       <br> </br>
       <br> </br>
