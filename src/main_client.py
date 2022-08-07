@@ -64,9 +64,10 @@ def menu():
 def register():
 
 	if request.method == "POST":
-		data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","insturmento","tlf","pin")
+		data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","instrumento","tlf","pin")
 		headers = {'Content-Type': 'application/json'}
 
+		print (data)
 		req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers)
 		return redirect('/register')
 	return render_template('register.html')
@@ -80,9 +81,10 @@ def registerUser():
 		return redirect('/')
 	else:
 		error=""
+		data=""
 		if request.method == "POST":
-			data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","insturmento","tlf","pin")
-
+			data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","instrumento","tlf","pin")
+			print (request.form.get("instrumento"))
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers )
 			array=req.json()
@@ -112,8 +114,16 @@ def registerBanda():
 			return render_template('addBanda.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
 		return render_template('addBanda.html', json=data, error=error,succes=False)
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
-
-
-
+@app.route('/listMembers', methods = ['GET' , 'HEAD'])
+def getMembers():
+	global token
+	if(token != None):
+		if request.method == "GET":
+			req = requests.get('http://'+host+':5000/listMembers')
+			llista = req.json()
+			return render_template('listMembers.html', users=llista, len=len(llista))
+		else:
+			return redirect('/')
+#/////////////////////////////////////////////////////////////////////////////////////////////////		 
 if __name__=='__main__':
 	app.run(debug=True, port=3000)

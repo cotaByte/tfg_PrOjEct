@@ -1,3 +1,4 @@
+from crypt import methods
 from ctypes.wintypes import PINT
 from curses import resetty
 from mailbox import NoSuchMailboxError
@@ -106,7 +107,8 @@ def addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin):
             data =  "El usuario ya existe"
             ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
             return ret
-    id = lambda a : str(round(time.time()*1000)) if director== 0 else str(round(time.time()*1000)+"D")
+    
+    id = lambda a : str(round(time.time()*1000)) if director== 0 else str(round(time.time()*1000))+"D"
     print (id)
      # Get timestampfor the id of the user
 
@@ -148,12 +150,21 @@ def addBanda(nombre,poblacion):
     ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
     return ret
 
-        
-
-
-
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listMembers', methods=['GET','HEAD'])
+def getUsers():
+    if (request.method== 'GET'):
+        return listMembers()
 
+def listMembers():
+    con = connection()
+    c = auxMethods.getCursor(con)
+    c.execute("SELECT id, nombre, apellido1, apellido2,id_instrumento, telefono FROM Miembro")
+    data = c.fetchall()
+    print (data)
+    c.close()
+    ret = json.dumps(data)
+    return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if __name__=='__main__':
 	app.run(debug=True, host="127.0.0.1")

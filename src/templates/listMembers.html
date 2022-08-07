@@ -1,0 +1,30 @@
+{% extends 'navbar.html' %} 
+
+{% block content %}
+<ol>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">1r Apellido</th>
+            <th scope="col">2do Apellido</th>
+            <th scope="col">Instrumento</th>
+            <th scope="col">Telefono</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+    {%for i in range(0, len)%}
+    <tr>
+        <td>{{users[i][1]}}</td>
+        <td>{{users[i][2]}}</td>
+        <td>{{users[i][3]}}</td>
+        <td>{{users[i][4]}}</td>
+        <td>{{users[i][5]}}</td>
+        <td>
+    </tr>
+    {%endfor%}
+</tbody>
+</table>
+    </ol>
+{% endblock %}
