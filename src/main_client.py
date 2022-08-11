@@ -29,7 +29,6 @@ def login():
 		req = requests.post('http://'+host+':5000/login', json=data, verify=False, headers=headers)
 		
 		token = req.json()
-		print(token)
 		if(token != None): return redirect('/greetings')
 
 	return render_template('login.html')
