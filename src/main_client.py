@@ -101,6 +101,7 @@ def registerBanda():
 			return redirect('/')
 	else:
 		error=""
+		data=""
 
 		if(request.method == 'POST'):
 			data= auxMethods.setObject4Server(request.form, "nombre", "poblacion")
@@ -124,5 +125,65 @@ def getMembers():
 		else:
 			return redirect('/')
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
+@app.route('/listBandas', methods = ['GET' , 'HEAD'])
+def getBandas():
+	global token
+	if(token != None):
+		if request.method == "GET":
+			req = requests.get('http://'+host+':5000/listBandas')
+			lista = req.json()
+			return render_template('listBandas.html', bandas=lista, len=len(lista))
+		else:
+			return redirect('/')
+#/////////////////////////////////////////////////////////////////////////////////////////////////		 TODO
+@app.route('/joinBanda', methods =["POST" , "GET"])
+def joinner():
+	global token
+	if(token != None):
+		if request.method == "GET":
+			data= {"token":token}
+			headers = {'Content-Type': 'application/json'}
+			req = requests.get('http://'+host+':5000/listJoin', json=data, verify=False, headers=headers )
+			llista = req.json()
+			return render_template('join.html', banda=llista, len=len(llista)) 
+			
+		if request.method == "POST":
+			id = request.form.get("id")
+			data= {
+				"token":token,
+				"id":id
+				}
+			headers = {'Content-Type': 'application/json'}
+			req = requests.post('http://'+host+':5000/join', json=data , verify=False, headers=headers)
+			return redirect("/joinBanda")
+		return render_template('join.html')
+	else:
+		return redirect('/')
+#/////////////////////////////////////////////////////////////////////////////////////////////////		DONE
+@app.route('/leave', methods =["GET", "POST"])
+def leaver():
+	global token
+	if(token != None):
+		if request.method == "GET":
+			data={
+				"token":token
+			}
+			headers = {'Content-Type': 'application/json'}
+			req = requests.get('http://'+host+':5000/listLeave', json=data, verify=False, headers=headers )
+			llista = req.json()
+			return render_template('leave.html', ws=llista, len=len(llista))
+			
+		if request.method == "POST":
+			data={
+				"token":token,
+				"wsId" : request.form.get('id')
+			}
+			headers = {'Content-Type': 'application/json'}
+			req = requests.post('http://'+host+':5000/leave', json=data , verify=False, headers=headers)
+			return redirect("/leave")
+		return render_template('leave.html')
+	else:
+		return redirect('/')
+#/////////////////////////////////////////////////////////////////////////////////////////////////		
 if __name__=='__main__':
 	app.run(debug=True, port=3000)

@@ -14,12 +14,12 @@
         <tbody>
     {%for i in range(0, len)%}
     <tr>
-        <td>{{ws[i][1]}}</td>
-        <td>{{ws[i][2]}}</td>
+        <td>{{banda[i][1]}}</td>
+        <td>{{banda[i][2]}}</td>
         <td>
        <form class="row g-3" method= "post" action='{{ url_for("joinner") }}'>
-            <input name="id" value="{{ws[i][0]}}" hidden>
-            <button class="btn btn-outline-danger" type="submit" >Join</button>
+            <input name="id" value="{{banda[i][0]}}" hidden>
+            <button class="btn btn-outline-danger" type="submit" >Unirse</button>
         </form></td>
 
     </tr>

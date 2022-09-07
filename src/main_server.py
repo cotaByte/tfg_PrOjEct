@@ -3,6 +3,7 @@ from ctypes.wintypes import PINT
 from curses import resetty
 from mailbox import NoSuchMailboxError
 from re import T, X
+import re
 from readline import append_history_file
 from urllib import response
 from psutil import net_if_addrs
@@ -146,7 +147,7 @@ def addBanda(nombre,poblacion):
     c.execute('INSERT INTO banda (id_banda, nombre, poblacion) VALUES (%s, %s, %s) ', (id, nombre, poblacion ))
     con.commit()
     con.close()
-    data = "Miembro añadido correctamente"
+    data = "Banda añadida correctamente"
     ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
     return ret
 
@@ -166,5 +167,90 @@ def listMembers():
     ret = json.dumps(data)
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listBandas', methods=['GET','HEAD'])
+def getBandas():
+    if (request.method== 'GET'):
+        return listBandas()
+
+def listBandas():
+    con = connection()
+    c = auxMethods.getCursor(con)
+    c.execute("SELECT * FROM Banda")
+    data = c.fetchall()
+    print (data)
+    c.close()
+    ret = json.dumps(data)
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/join', methods = [ "POST"])
+def joinBanda():
+    if (request.method == "POST"):
+        response = request.data
+        array=json.loads(response.decode('utf-8'))
+        print ("AHI VA EL ARRAY \n")
+        print(array)
+        idBanda = array.get('id')
+        token = array.get('token')
+        ret = join (token, idBanda)
+        return ret
+
+def join (token,  idBanda):
+    con = connection()
+    c = auxMethods.getCursor(con)
+    sql  = "SELECT nombre FROM Banda WHERE id_banda = '%s' "%idBanda
+    c.execute(sql)
+    for record in c:
+        name = record[0]
+        c.execute( "SELECT id_miembro, id_banda FROM miembrobanda WHERE id_miembro =%s AND id_banda = %s  ",(token,idBanda))
+        res= None
+        res= c.fetchall()
+        if(res):
+            con.close()
+            data= "El miembro ya se encuentra en esta banda"
+            ret = json.dumps(data)
+            return ret
+        sqlInsert = "INSERT INTO miembrobanda (id_miembro,id_banda) VALUES (%s,%s )"
+        c.execute(sqlInsert,(token,idBanda))
+        con.commit()
+        con.close()
+        data = "Te has añadido a la banda  "+name+" correctamente"
+        ret = json.dumps(data)
+        return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listJoin' , methods =[ "GET"])
+def  joinLister():
+    if (request.method == "GET"):
+        response= request.data
+        array = json.loads(response.decode('utf-8'))
+        print (array)
+        token = array.get("token")
+        return listJoin(token)
+
+def  listJoin(token):
+    con = connection()
+    c = auxMethods.getCursor(con)
+    data= []
+    c.execute("SELECT id_banda FROM Banda")
+    rows = c.fetchall()
+    for record in rows:
+        c.execute ("SELECT id_banda FROM  miembrobanda WHERE  id_miembro = %s  and id_banda= %s" , (token,record[0]))
+        res = c.fetchone()
+        if res is not None:
+            res = res[0]
+            data.append(res)
+    placeholder = '%s'
+    placeholders= ', '.join(placeholder for unused in data)
+    query = "SELECT id_banda, nombre, poblacion from Banda"
+    if (len(data)>0):
+       query= "SELECT id_banda,nombre,poblacion FROM Banda WHERE id_banda NOT IN ({})".format(placeholders)
+       print ("query List Join \n")
+       print (query)
+    c.execute(query,data)
+    data2= c.fetchall()
+    c.close()
+    ret= json.dumps(data2)
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 if __name__=='__main__':
 	app.run(debug=True, host="127.0.0.1")
