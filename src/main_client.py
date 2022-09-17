@@ -160,27 +160,26 @@ def joinner():
 	else:
 		return redirect('/')
 #/////////////////////////////////////////////////////////////////////////////////////////////////		DONE
-@app.route('/leave', methods =["GET", "POST"])
+@app.route('/leaveBanda', methods =["GET", "POST"])
 def leaver():
 	global token
 	if(token != None):
 		if request.method == "GET":
-			data={
-				"token":token
-			}
+
+			data={"token":token}
 			headers = {'Content-Type': 'application/json'}
 			req = requests.get('http://'+host+':5000/listLeave', json=data, verify=False, headers=headers )
 			llista = req.json()
-			return render_template('leave.html', ws=llista, len=len(llista))
+			return render_template('leave.html', banda=llista, len=len(llista))
 			
 		if request.method == "POST":
 			data={
 				"token":token,
-				"wsId" : request.form.get('id')
+				"id" : request.form.get('id')
 			}
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/leave', json=data , verify=False, headers=headers)
-			return redirect("/leave")
+			return redirect("/leaveBanda")
 		return render_template('leave.html')
 	else:
 		return redirect('/')

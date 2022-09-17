@@ -106,12 +106,12 @@ def addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin):
     for record in c:
         if(record[0] ==nif):
             data =  "El usuario ya existe"
+            con.close()
             ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
             return ret
     
     id = lambda a : str(round(time.time()*1000)) if director== 0 else str(round(time.time()*1000))+"D"
-    print (id)
-     # Get timestampfor the id of the user
+     # Get timestamp for the id of the user
 
     c.execute('INSERT INTO miembro (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, id_banda, director, pin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)'
     ,(id(director),int(nif),nombre,apellido1,apellido2,int(instrumento),int(tlf),banda,director,int(pin)))
@@ -126,10 +126,8 @@ def registerBanda():
     if (request.method== "POST"):
         response= request.data
         array=json.loads(response.decode('utf-8'))
-
         nombre= array.get('nombre')
         poblacion = array.get('poblacion')
-
         return addBanda(nombre,poblacion)
 
 
@@ -141,8 +139,10 @@ def addBanda(nombre,poblacion):
     for record in c:
         if (record[0] == nombre):
             data =  "Esta banda ya se encuentra registrada"
+            con.close()
             ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
             return ret
+
     id = str(round(time.time()*1000))
     c.execute('INSERT INTO banda (id_banda, nombre, poblacion) VALUES (%s, %s, %s) ', (id, nombre, poblacion ))
     con.commit()
@@ -187,8 +187,6 @@ def joinBanda():
     if (request.method == "POST"):
         response = request.data
         array=json.loads(response.decode('utf-8'))
-        print ("AHI VA EL ARRAY \n")
-        print(array)
         idBanda = array.get('id')
         token = array.get('token')
         ret = join (token, idBanda)
@@ -209,13 +207,20 @@ def join (token,  idBanda):
             data= "El miembro ya se encuentra en esta banda"
             ret = json.dumps(data)
             return ret
-        sqlInsert = "INSERT INTO miembrobanda (id_miembro,id_banda) VALUES (%s,%s )"
-        c.execute(sqlInsert,(token,idBanda))
-        con.commit()
-        con.close()
-        data = "Te has añadido a la banda  "+name+" correctamente"
-        ret = json.dumps(data)
-        return ret
+        try:
+            sqlInsert = "INSERT INTO miembrobanda (id_miembro,id_banda) VALUES (%s,%s )"
+            c.execute(sqlInsert,(token,idBanda))
+            con.commit()
+            data = "Te has añadido a la banda  "+name+" correctamente"
+            con.close()
+            ret = json.dumps(data)
+            return ret
+        except:
+             con.close()
+             data = "No se ha podido abandonar la banda"
+             ret = json.dumps(data)
+             return ret
+
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listJoin' , methods =[ "GET"])
 def  joinLister():
@@ -229,28 +234,65 @@ def  joinLister():
 def  listJoin(token):
     con = connection()
     c = auxMethods.getCursor(con)
-    data= []
-    c.execute("SELECT id_banda FROM Banda")
-    rows = c.fetchall()
-    for record in rows:
-        c.execute ("SELECT id_banda FROM  miembrobanda WHERE  id_miembro = %s  and id_banda= %s" , (token,record[0]))
-        res = c.fetchone()
-        if res is not None:
-            res = res[0]
-            data.append(res)
-    placeholder = '%s'
-    placeholders= ', '.join(placeholder for unused in data)
-    query = "SELECT id_banda, nombre, poblacion from Banda"
-    if (len(data)>0):
-       query= "SELECT id_banda,nombre,poblacion FROM Banda WHERE id_banda NOT IN ({})".format(placeholders)
-       print ("query List Join \n")
-       print (query)
-    c.execute(query,data)
-    data2= c.fetchall()
+    sql = " select * from banda where id_banda not in (select id_banda from miembrobanda where id_miembro= %s );"
+    c.execute( sql,(token,))
+    data= c.fetchall()
+    print (data)
     c.close()
-    ret= json.dumps(data2)
+    ret= json.dumps(data)
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listLeave' , methods =[ "GET"])
+def leaveLister():
+    if (request.method == "GET"):
+        response= request.data
+        array = json.loads(response.decode('utf-8'))
+        token = array.get("token")
+        return listLeave(token)
+
+def  listLeave(token):
+    con = connection()
+    c = auxMethods.getCursor(con)
+    sql = " select * from banda where id_banda in (select id_banda from miembrobanda where id_miembro= %s );"
+    c.execute( sql,(token,))
+    data= c.fetchall()
+    print (data)
+    c.close()
+    ret= json.dumps(data)
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/leave', methods = [ "POST"])
+def leaveBanda():
+    if (request.method  == "POST"):
+        response= request.data
+        array = json.loads(response.decode('utf-8'))
+        idBanda = array.get ("id")
+        token = array.get ("token")
+        ret = leave(token,idBanda)
+        return ret
+
+def leave(token, idBanda):
+    con = connection()
+    query = "SELECT id_banda FROM Banda WHERE id_banda = '%s'" %idBanda
+    c = auxMethods.getCursor(con)
+    c.execute(query)
+    id = None
+    id = c.fetchone()[0]
+    query = "DELETE FROM miembrobanda WHERE id_miembro = %s AND id_banda = %s"
+    try:
+        auxMethods.getCursor(con).execute(query, (token, idBanda))
+        con.commit()
+        con.close()
+        data = "Has abandonado la banda" +idBanda
+        ret = json.dumps(data)
+        return ret
+    except:
+        con.close()
+        data = "No se ha podido abandonar la banda"
+        ret = json.dumps(data)
+        return ret
+
+
 
 if __name__=='__main__':
 	app.run(debug=True, host="127.0.0.1")
