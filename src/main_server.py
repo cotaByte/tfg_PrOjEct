@@ -30,10 +30,7 @@ def connection(): # method for connecting to the database
         )
         return con
     except Exception as ex:
-        print(ex)
-
-
-        
+        print(ex) 
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/greetings', methods=["GET"])
 def greetings():
@@ -46,7 +43,6 @@ def greetings():
         apellido2 = auxMethods.getUserSurname2Fromid(token)
         ret = json.dumps({'nombre':nombre,'apellido1':apellido1 ,'apellido2':apellido2 })
         return ret
-
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 DONE
 @app.route('/login', methods =["GET", "POST"])
 def login():
@@ -58,15 +54,11 @@ def login():
         pin= array.get('pin') 
 
         ret = login(nif,pin )
-        print ("ret \n")
-        print (ret)
-
         return ret
 		
 def login(nif, pin):                                                           #Method to log in on de website
     token = None
     con= connection()
-    print(con)
     query = 'SELECT id, nif, pin, nombre FROM Miembro'
     c= auxMethods.getCursor(con)
     c.execute(query)
@@ -78,8 +70,6 @@ def login(nif, pin):                                                           #
     con.close()
     ret = json.dumps(token)
     return ret
-
-
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/addUser', methods =["POST"])
 def registerUser():
@@ -96,8 +86,7 @@ def registerUser():
         tlf=  array.get('tlf')
         pin=array.get('pin')
         return addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin)
-
-
+    
 def addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin):                                     # Method for add a User to the database 
     con = connection()
     c= auxMethods.getCursor(con)
@@ -129,8 +118,7 @@ def registerBanda():
         nombre= array.get('nombre')
         poblacion = array.get('poblacion')
         return addBanda(nombre,poblacion)
-
-
+    
 def addBanda(nombre,poblacion):
     con = connection()
     c= auxMethods.getCursor(con)
@@ -150,7 +138,6 @@ def addBanda(nombre,poblacion):
     data = "Banda añadida correctamente"
     ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
     return ret
-
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listMembers', methods=['GET','HEAD'])
 def getUsers():
@@ -162,7 +149,6 @@ def listMembers():
     c = auxMethods.getCursor(con)
     c.execute("SELECT id, nombre, apellido1, apellido2,id_instrumento, telefono FROM Miembro")
     data = c.fetchall()
-    print (data)
     c.close()
     ret = json.dumps(data)
     return ret
@@ -177,7 +163,6 @@ def listBandas():
     c = auxMethods.getCursor(con)
     c.execute("SELECT * FROM Banda")
     data = c.fetchall()
-    print (data)
     c.close()
     ret = json.dumps(data)
     return ret
@@ -220,14 +205,12 @@ def join (token,  idBanda):
              data = "No se ha podido abandonar la banda"
              ret = json.dumps(data)
              return ret
-
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listJoin' , methods =[ "GET"])
 def  joinLister():
     if (request.method == "GET"):
         response= request.data
         array = json.loads(response.decode('utf-8'))
-        print (array)
         token = array.get("token")
         return listJoin(token)
 
@@ -237,7 +220,6 @@ def  listJoin(token):
     sql = " select * from banda where id_banda not in (select id_banda from miembrobanda where id_miembro= %s );"
     c.execute( sql,(token,))
     data= c.fetchall()
-    print (data)
     c.close()
     ret= json.dumps(data)
     return ret
@@ -256,7 +238,6 @@ def  listLeave(token):
     sql = " select * from banda where id_banda in (select id_banda from miembrobanda where id_miembro= %s );"
     c.execute( sql,(token,))
     data= c.fetchall()
-    print (data)
     c.close()
     ret= json.dumps(data)
     return ret
@@ -273,11 +254,11 @@ def leaveBanda():
 
 def leave(token, idBanda):
     con = connection()
-    query = "SELECT id_banda FROM Banda WHERE id_banda = '%s'" %idBanda
     c = auxMethods.getCursor(con)
+    query = "SELECT id_banda FROM Banda WHERE id_banda = '%s'" %idBanda
     c.execute(query)
     id = None
-    id = c.fetchone()[0]
+    id = c.fetchone()[0]#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     query = "DELETE FROM miembrobanda WHERE id_miembro = %s AND id_banda = %s"
     try:
         auxMethods.getCursor(con).execute(query, (token, idBanda))
@@ -291,8 +272,57 @@ def leave(token, idBanda):
         data = "No se ha podido abandonar la banda"
         ret = json.dumps(data)
         return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/addEvent' , methods = ['POST'])
+
+def eventRegister():
+    if (request.method=='POST'):
+        response= request.data
+        array = json.loads(response.decode('utf-8'))
+        nombre = array.get ("nombre")
+        ubicacion = array.get("ubicacion")
+        fecha_evento= array.get("fecha_evento")
+        estado = 0  #only created
+        
+        return registerEvent(nombre,ubicacion,fecha_evento,estado)
+           
+def registerEvent (nombre,ubicacion,fecha_evento,estado):
+    con = connection()
+    c= auxMethods.getCursor(con)
+    sql = "SELECT nombre FROM eventos WHERE nombre = '%s'" %nombre
+    c.execute(sql)
+    if (c.rowcount!=0):
+        con.close()
+        data = "Ya existe un evento registrado con este codigo"
+        ret = json.dumps({'data':data, 'error':True})                                              # Check if the event is already registered
+        return ret
+    
+    
+    id = str(round(time.time()*1000))
+    c.execute('INSERT INTO eventos (id_evento, nombre, ubicacion,fecha_evento,estado) VALUES (%s, %s, %s,%s,%s) ', (id, nombre, ubicacion,fecha_evento,estado ))
+    con.commit()
+    con.close()
+    data = "Evento añadido correctamente"
+    ret = json.dumps({'data':data, 'error':False})
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listEvents', methods=['GET','HEAD'])
+def getEvents():
+    if (request.method== 'GET'):
+        return listEvents()
+
+def listEvents():
+    con = connection()
+    c = auxMethods.getCursor(con)
+    c.execute("SELECT * FROM Eventos")
+    data = c.fetchall()
+    c.close()
+    ret = json.dumps(data)
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 if __name__=='__main__':
 	app.run(debug=True, host="127.0.0.1")
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

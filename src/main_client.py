@@ -24,7 +24,6 @@ def login():
 	global token
 	if request.method == "POST":
 		data= auxMethods.setObject4Server(request.form,"nif" ,"pin")
-		print (data)
 		headers = {'Content-Type': 'application/json'}
 		req = requests.post('http://'+host+':5000/login', json=data, verify=False, headers=headers)
 		
@@ -65,8 +64,6 @@ def register():
 	if request.method == "POST":
 		data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","instrumento","tlf","pin")
 		headers = {'Content-Type': 'application/json'}
-
-		print (data)
 		req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers)
 		return redirect('/register')
 	return render_template('register.html')
@@ -83,7 +80,6 @@ def registerUser():
 		data=""
 		if request.method == "POST":
 			data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","instrumento","tlf","pin")
-			print (request.form.get("instrumento"))
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers )
 			array=req.json()
@@ -184,5 +180,36 @@ def leaver():
 	else:
 		return redirect('/')
 #/////////////////////////////////////////////////////////////////////////////////////////////////		
+@app.route('/addEvent', methods =["GET", "POST"])
+def addEvent():
+	global token
+	if(token == None):
+			return redirect('/')
+	else:
+		error=""
+		data=""
+
+		if(request.method == 'POST'):
+			data= auxMethods.setObject4Server(request.form, "nombre", "ubicacion","fecha_evento")
+			headers = {'Content-Type': 'application/json'}
+			req = requests.post('http://'+host+':5000/addEvent', json=data, verify=False, headers=headers )
+			array=req.json()
+			error=array.get('error')
+			data=array.get('data')
+
+			return render_template('addEvent.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
+		return render_template('addEvent.html', json=data, error=error,succes=False)
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listEvents', methods = ['GET' , 'HEAD'])
+def getEvents():
+	global token
+	if(token != None):
+		if request.method == "GET":
+			req = requests.get('http://'+host+':5000/listEvents')
+			lista = req.json()
+			return render_template('listEvents.html', eventos=lista, len=len(lista))
+		else:
+			return redirect('/')
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if __name__=='__main__':
 	app.run(debug=True, port=3000)
