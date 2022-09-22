@@ -16,9 +16,12 @@ from _thread import *
 from requests.sessions import RequestsCookieJar
 import auxMethods
 from flask import Flask, request, render_template, redirect
+from flask_cors import cross_origin,CORS
+
 
 app = Flask(__name__)
 
+cors = CORS(app, resources={r"/*" : {"origins": "*"}})
 def connection(): # method for connecting to the database
     try :
         con = psycopg2.connect(
@@ -31,6 +34,7 @@ def connection(): # method for connecting to the database
         return con
     except Exception as ex:
         print(ex) 
+
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/greetings', methods=["GET"])
 def greetings():
@@ -165,10 +169,11 @@ def listBandas():
     data = c.fetchall()
     c.close()
     ret = json.dumps(data)
+
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/join', methods = [ "POST"])
-def joinBanda():
+def joinBanda():    
     if (request.method == "POST"):
         response = request.data
         array=json.loads(response.decode('utf-8'))

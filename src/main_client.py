@@ -6,10 +6,12 @@ from flask import Flask, request, render_template, redirect,url_for, flash, sess
 import requests, json
 from werkzeug import datastructures
 import auxMethods
+
 # Flask constructor
 
 token = None
 app = Flask(__name__)
+
 
 
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 DONE
