@@ -1,6 +1,5 @@
 from crypt import methods
 from ctypes.wintypes import PINT
-from curses import resetty
 from mailbox import NoSuchMailboxError
 from re import T, X
 import re
@@ -11,11 +10,11 @@ import psycopg2
 import requests
 from datetime import date
 from os import strerror
-import socket,sqlite3,time,json,sys,threading, os, signal
+import time,json
 from _thread import *
 from requests.sessions import RequestsCookieJar
 import auxMethods
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect,jsonify
 from flask_cors import cross_origin,CORS
 
 
@@ -67,8 +66,8 @@ def login(nif, pin):                                                           #
     c= auxMethods.getCursor(con)
     c.execute(query)
     for record in c:
-            if(record[1] == int(nif) and str(record[2]) == str(pin) ):
-                    token= record[0]
+            if(record['nif'] == int(nif) and str(record['pin']) == str(pin) ):
+                    token= record['id']
                     ret = json.dumps(token)
                     return ret  # with the return here, the loop stops when it smash the match (no innecesary iterations) 
     con.close()
@@ -97,7 +96,7 @@ def addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin):
     query = 'SELECT nif FROM Miembro'
     c.execute(query)
     for record in c:
-        if(record[0] ==nif):
+        if(record['nif'] ==nif):
             data =  "El usuario ya existe"
             con.close()
             ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
@@ -129,7 +128,7 @@ def addBanda(nombre,poblacion):
     query = 'SELECT nombre FROM Banda'
     c.execute(query)
     for record in c:
-        if (record[0] == nombre):
+        if (record['nombre'] == nombre):
             data =  "Esta banda ya se encuentra registrada"
             con.close()
             ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
@@ -154,7 +153,8 @@ def listMembers():
     c.execute("SELECT id, nombre, apellido1, apellido2,id_instrumento, telefono FROM Miembro")
     data = c.fetchall()
     c.close()
-    ret = json.dumps(data)
+    ret= json.dumps(data)
+    print (ret)
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listBandas', methods=['GET','HEAD'])
@@ -188,7 +188,7 @@ def join (token,  idBanda):
     sql  = "SELECT nombre FROM Banda WHERE id_banda = '%s' "%idBanda
     c.execute(sql)
     for record in c:
-        name = record[0]
+        name = record['nombre']
         c.execute( "SELECT id_miembro, id_banda FROM miembrobanda WHERE id_miembro =%s AND id_banda = %s  ",(token,idBanda))
         res= None
         res= c.fetchall()
@@ -259,11 +259,7 @@ def leaveBanda():
 
 def leave(token, idBanda):
     con = connection()
-    c = auxMethods.getCursor(con)
-    query = "SELECT id_banda FROM Banda WHERE id_banda = '%s'" %idBanda
-    c.execute(query)
-    id = None
-    id = c.fetchone()[0]#/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    c = auxMethods.getCursor(con)  
     query = "DELETE FROM miembrobanda WHERE id_miembro = %s AND id_banda = %s"
     try:
         auxMethods.getCursor(con).execute(query, (token, idBanda))

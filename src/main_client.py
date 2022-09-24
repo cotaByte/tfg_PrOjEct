@@ -119,6 +119,7 @@ def getMembers():
 		if request.method == "GET":
 			req = requests.get('http://'+host+':5000/listMembers')
 			llista = req.json()
+			print(llista)
 			return render_template('listMembers.html', users=llista, len=len(llista))
 		else:
 			return redirect('/')

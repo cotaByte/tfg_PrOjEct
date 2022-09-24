@@ -16,10 +16,10 @@
         <tbody>
     {%for i in range(0, len)%}
     <tr>
-        <td>{{eventos[i][1]}}</td>
-        <td>{{eventos[i][2]}}</td>
-        <td>{{eventos[i][3]}}</td>
-        <td>{{eventos[i][4]}}</td>
+        <td>{{eventos[i]['nombre']}}</td>
+        <td>{{eventos[i]['ubicacion']}}</td>
+        <td>{{eventos[i]['fecha_evento']}}</td>
+        <td>{{eventos[i]['estado']}}</td>
         <td>
     </tr>
     {%endfor%}

@@ -14,11 +14,11 @@
         <tbody>
     {%for i in range(0, len)%}
     <tr>
-        <td>{{banda[i][1]}}</td>
-        <td>{{banda[i][2]}}</td>
+        <td>{{banda[i]['nombre']}}</td>
+        <td>{{banda[i]['poblacion']}}</td>
         <td>
        <form class="row g-3" method= "post" action='{{ url_for("leaver") }}'>
-            <input name="id" value="{{banda[i][0]}}" hidden>
+            <input name="id" value="{{banda[i]['id_banda']}}" hidden>
             <button class="btn btn-outline-danger" type="submit" >Abandonar</button>
         </form></td>
 

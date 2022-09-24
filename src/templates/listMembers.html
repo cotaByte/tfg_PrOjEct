@@ -16,11 +16,11 @@
         <tbody>
     {%for i in range(0, len)%}
     <tr>
-        <td>{{users[i][1]}}</td>
-        <td>{{users[i][2]}}</td>
-        <td>{{users[i][3]}}</td>
-        <td>{{users[i][4]}}</td>
-        <td>{{users[i][5]}}</td>
+        <td>{{users[i]['nombre']}}</td>
+        <td>{{users[i]['apellido1']}}</td>
+        <td>{{users[i]['apellido2']}}</td>
+        <td>{{users[i]['id_instrumento']}}</td>
+        <td>{{users[i]['telefono']}}</td>
         <td>
     </tr>
     {%endfor%}

@@ -1,14 +1,25 @@
 from datetime import date
+import imp
 from os import strerror
 from _thread import *
 import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
+
+
+""" 
+def getCursor(conn):  # method for getting the cursor 
+    cursorObj = conn.cursor()
+    return cursorObj
+ """
+
 
 
 
 def getCursor(conn):  # method for getting the cursor 
-    cursorObj = conn.cursor()
-    return cursorObj
+    cursorObj = conn.cursor(cursor_factory = RealDictCursor)
+    return cursorObj 
+
 
 
 def setConnection(): # method for connecting to the database
@@ -31,7 +42,7 @@ def getUserNameFromid(id):                                                      
     c.execute(query)
     nombre = c.fetchone()
     if nombre is not None:
-        nombre = nombre[0]
+        nombre = nombre['nombre']
     con.close()
     if(nombre  == None):
         return None
@@ -45,7 +56,7 @@ def getUserSurname1Fromid(id):                                                  
     c.execute(query)
     apellido1 = c.fetchone()
     if apellido1 is not None:
-        apellido1 = apellido1[0]
+        apellido1 = apellido1['apellido1']
     con.close()
     if(apellido1  == None):
         return None
@@ -59,7 +70,7 @@ def getUserSurname2Fromid(id):                                                  
     c.execute(query)
     apellido2 = c.fetchone()
     if apellido2 is not None:
-        apellido2 = apellido2[0]
+        apellido2 = apellido2['apellido2']
     con.close()
     if(apellido2  == None):
         return None
