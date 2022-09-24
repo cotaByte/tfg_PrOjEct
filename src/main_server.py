@@ -321,9 +321,98 @@ def listEvents():
     ret = json.dumps(data)
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listInstrumentos', methods=['GET','HEAD'])
+def getInstrumentos():
+    if (request.method== 'GET'):
+        return listInstrumentos()
 
+def listInstrumentos():
+    con = connection()
+    c = auxMethods.getCursor(con)
+    c.execute("SELECT * FROM Instrumentos")
+    data = c.fetchall()
+    c.close()
+    ret = json.dumps(data)
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/removeMember', methods = ['DELETE', 'GET'])
+def removeMember():
+        if(request.method=="DELETE"):
+            id_miembro = request.args.get('id')
+            return rmMember(id_miembro)
+        if(request.method=="GET"):
+            return redirect("/listMembers")
 
+def rmMember (id):                                                         # Method to remove the user //////////////////////////DONE
+    con = connection()
+    sql = "DELETE FROM Miembro WHERE id ='"+str(id)+"'"
+    sql2 = "DELETE FROM miembrobanda WHERE id_miembro ='"+str(id)+"'"
+    
+    try:
+        c  = auxMethods.getCursor(con)
+        c.execute(sql)
+        c.execute(sql2)
+        con.commit()
+        con.close()
+        data = "El miembro fue eliminado correctamente"  
+        ret = json.dumps(data)
+        return  ret
+    except:
+        data = "Hubo un error al tratar de eliminar el miembro"  
+        ret = json.dumps(data)
+        return  ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/removeBanda', methods = ['DELETE', 'GET'])
+def removeBanda():
+        if(request.method=="DELETE"):
+            id_banda = request.args.get('id')
+            return rmBanda(id_banda)
+        if(request.method=="GET"):
+            return redirect("/listBandas")
 
+def rmBanda (id):
+    con = connection()
+    sql = "DELETE FROM Banda WHERE id_banda ='"+str(id)+"'"
+    sql2 = "DELETE FROM miembrobanda WHERE id_banda ='"+str(id)+"'"
+    try:
+        c  = auxMethods.getCursor(con)
+        c.execute(sql)
+        c.execute(sql2)
+        con.commit()
+        con.close()
+        data = "La banda fue eliminada correctamente"  
+        ret = json.dumps(data)
+        return  ret
+    except:
+        data = "Hubo un error al tratar de eliminar la banda"  
+        ret = json.dumps(data)
+        return  ret
+        
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/removeEvent', methods = ['DELETE', 'GET'])
+def removeEvent():
+        if(request.method=="DELETE"):
+            id_evento = request.args.get('id')
+            return rmEvento(id_evento)
+        if(request.method=="GET"):
+            return redirect("/listEvents")
+
+def rmEvento (id):
+    con = connection()
+    sql = "DELETE FROM Eventos WHERE id_evento ='"+str(id)+"'"
+    try:
+        c  = auxMethods.getCursor(con)
+        c.execute(sql)
+        con.commit()
+        con.close()
+        data = "El evento fue eliminado correctamente"  
+        ret = json.dumps(data)
+        return  ret
+    except:
+        data = "Hubo un error al tratar de eliminar el evento"  
+        ret = json.dumps(data)
+        return  ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if __name__=='__main__':
 	app.run(debug=True, host="127.0.0.1")
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
