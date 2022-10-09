@@ -7,15 +7,6 @@ from psycopg2.extras import RealDictCursor
 from datetime import datetime
 
 
-""" 
-def getCursor(conn):  # method for getting the cursor 
-    cursorObj = conn.cursor()
-    return cursorObj
- """
-
-
-
-
 def getCursor(conn):  # method for getting the cursor 
     cursorObj = conn.cursor(cursor_factory = RealDictCursor)
     return cursorObj 

@@ -82,10 +82,11 @@
   </form>
 </div>
 <div class="flash">
-  {% if succes %} {% if error %}
-  <p style="text-align: center">ERROR , {{json}}</p>
-
-  {% else %}
+  {% if ok == True %}
   <p style="text-align: center">{{json}}</p>
-  {% endif %} {% endif %} {% endblock %}
+  {% endif %}
+  {% if ok ==  False %}
+  <p style="text-align: center">ERROR , {{json}}</p>
+ {% endif %}
+  {% endblock %}
 </div>

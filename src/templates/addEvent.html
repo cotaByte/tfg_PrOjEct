@@ -25,15 +25,13 @@
         <button type="submit" class="btn ">Add</button>
         </div>
   </form>
-  <div class="flash">
-    {% if succes %}
-    {% if error %}
-      <p style=" text-align: center" > ERROR , {{json}} </p>
-  
-  {% else %}
-      <p style=" text-align: center"> {{json}}</p>
+<div class="flash">
+  {% if ok == True %}
+  <p style="text-align: center">{{json}}</p>
   {% endif %}
-  {% endif %}
- 
-  </div>
-{% endblock %}
+  {% if ok ==  False %}
+  <p style="text-align: center">ERROR , {{json}}</p>
+ {% endif %}
+  {% endblock %}
+</div>
+

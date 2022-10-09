@@ -78,18 +78,20 @@ def registerUser():
 	if(token == None):
 		return redirect('/')
 	else:
-		error=""
+		ok=""
 		data=""
 		if request.method == "POST":
 			data = auxMethods.setObject4Server(request.form, "nif","nombre","apellido1","apellido2","instrumento","tlf","pin")
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/addUser', json=data, verify=False, headers=headers )
 			array=req.json()
-			error=array.get('error')
+			ok=array.get('ok')
 			data=array.get('data')
+			print(ok)
+			print(data)
 
-			return render_template('addUser.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
-		return render_template('addUser.html', json=data, error=error,succes=False)
+			return render_template('addUser.html', json=data,ok=ok )  # Added param ok message to retrieve the ok message from the server in the html
+		return render_template('addUser.html', json=data, ok=ok)
 		
 #/////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/addBanda', methods =["GET", "POST"])
@@ -98,7 +100,7 @@ def registerBanda():
 	if(token == None):
 			return redirect('/')
 	else:
-		error=""
+		ok=""
 		data=""
 
 		if(request.method == 'POST'):
@@ -106,11 +108,11 @@ def registerBanda():
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/addBanda', json=data, verify=False, headers=headers )
 			array=req.json()
-			error=array.get('error')
+			ok=array.get('ok')
 			data=array.get('data')
 
-			return render_template('addBanda.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
-		return render_template('addBanda.html', json=data, error=error,succes=False)
+			return render_template('addBanda.html', json=data,ok=ok)  # Added param ok message to retrieve the ok message from the server in the html
+		return render_template('addBanda.html', json=data, ok=ok)
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/listMembers', methods = ['GET' , 'HEAD'])
 def getMembers():
@@ -189,7 +191,7 @@ def addEvent():
 	if(token == None):
 			return redirect('/')
 	else:
-		error=""
+		ok=""
 		data=""
 
 		if(request.method == 'POST'):
@@ -197,11 +199,11 @@ def addEvent():
 			headers = {'Content-Type': 'application/json'}
 			req = requests.post('http://'+host+':5000/addEvent', json=data, verify=False, headers=headers )
 			array=req.json()
-			error=array.get('error')
+			ok=array.get('ok')
 			data=array.get('data')
 
-			return render_template('addEvent.html', json=data, error=error ,succes=True)  # Added param error message to retrieve the error message from the server in the html
-		return render_template('addEvent.html', json=data, error=error,succes=False)
+			return render_template('addEvent.html', json=data, ok=ok )  # Added param ok message to retrieve the ok 
+		return render_template('addEvent.html', json=data, ok=ok)
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listEvents', methods = ['GET' , 'HEAD'])
 def getEvents():

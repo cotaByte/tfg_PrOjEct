@@ -1,30 +1,20 @@
 from crypt import methods
 from ctypes.wintypes import PINT
-from mailbox import NoSuchMailboxError
 from re import T, X
-import re
-from readline import append_history_file
-from urllib import response
-from psutil import net_if_addrs
 import psycopg2
-import requests
-from datetime import date
-from os import strerror
 import time,json
 from _thread import *
-from requests.sessions import RequestsCookieJar
 import auxMethods
-from flask import Flask, request, render_template, redirect,jsonify
-from flask_cors import cross_origin,CORS
-
+from flask import Flask, request, redirect
+from flask_cors import CORS
 
 app = Flask(__name__)
-
+# CORS: Permitirá recibir requests externas a una app flask. 
 cors = CORS(app, resources={r"/*" : {"origins": "*"}})
-def connection(): # method for connecting to the database
+
+def connection(): # metodo para conectarse a la base de datos
     try :
         con = psycopg2.connect(
-
             host= 'localhost',
             user='postgres',
             password='password',
@@ -33,7 +23,6 @@ def connection(): # method for connecting to the database
         return con
     except Exception as ex:
         print(ex) 
-
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 
 @app.route('/greetings', methods=["GET"])
 def greetings():
@@ -49,20 +38,22 @@ def greetings():
 #/////////////////////////////////////////////////////////////////////////////////////////////////		 DONE
 @app.route('/login', methods =["GET", "POST"])
 def login():
-    
     if request.method == "POST":
+        """ 
+        Forma  vieja de realizar el decode del json recibido por el json
         response = request.data
         array=json.loads(response.decode('utf-8'))
         nif= array.get('nif')
-        pin= array.get('pin') 
-
-        ret = login(nif,pin )
+        pin= array.get('pin')  """
+        nif= request.args.get('nif')
+        pin = request.args.get ('pin')
+        ret = login(nif,pin ) 
         return ret
 		
 def login(nif, pin):                                                           #Method to log in on de website
     token = None
     con= connection()
-    query = 'SELECT id, nif, pin, nombre FROM Miembro'
+    query = 'SELECT id, nif, pin, nombre FROM Miembros'
     c= auxMethods.getCursor(con)
     c.execute(query)
     for record in c:
@@ -77,7 +68,7 @@ def login(nif, pin):                                                           #
 @app.route('/addUser', methods =["POST"])
 def registerUser():
     if(request.method=="POST"):
-        response = request.data
+        """ response = request.data
         array=json.loads(response.decode('utf-8'))
         nif= array.get('nif')
         nombre=array.get('nombre') 
@@ -87,59 +78,69 @@ def registerUser():
         director = array.get('director')
         banda = array.get('banda')
         tlf=  array.get('tlf')
-        pin=array.get('pin')
+        pin=array.get('pin')"""
+        nif = request.args.get('nif')
+        nombre = request.args.get('nombre')
+        apellido1 = request.args.get('apellido1')
+        apellido2 = request.args.get('apellido2')
+        instrumento = request.args.get('instrumento')
+        director = request.args.get('director')
+        banda = request.args.get('banda')        
+        tlf = request.args.get('tlf')
+        pin = request.args.get('pin')
+
         return addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin)
     
 def addUser(nif,nombre,apellido1,apellido2,instrumento,director, banda,tlf,pin):                                     # Method for add a User to the database 
     con = connection()
     c= auxMethods.getCursor(con)
-    query = 'SELECT nif FROM Miembro'
+    query = 'SELECT nif FROM Miembros'
     c.execute(query)
     for record in c:
         if(record['nif'] ==nif):
             data =  "El usuario ya existe"
             con.close()
-            ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
+            ret = json.dumps({'data':data, 'ok':False})                                              # Check if the user already exists by using the email
             return ret
-    
     id = lambda a : str(round(time.time()*1000)) if director== 0 else str(round(time.time()*1000))+"D"
      # Get timestamp for the id of the user
-
-    c.execute('INSERT INTO miembro (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, id_banda, director, pin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)'
+    c.execute('INSERT INTO Miembros (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, id_banda, director, pin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)'
     ,(id(director),int(nif),nombre,apellido1,apellido2,int(instrumento),int(tlf),banda,director,int(pin)))
     con.commit()
     con.close()
     data = "Miembro añadido correctamente"
-    ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
+    ret = json.dumps({'data':data, 'ok':True})                                              # Check if the user already exists by using the email
     return ret
 #/////////////////////////////////////////////////////////////////////////////////////////////////       
 @app.route('/addBanda', methods =[ "POST"])
 def registerBanda():
     if (request.method== "POST"):
-        response= request.data
+        """ response= request.data
         array=json.loads(response.decode('utf-8'))
         nombre= array.get('nombre')
-        poblacion = array.get('poblacion')
+        poblacion = array.get('poblacion') """
+        nombre = request.args.get('nombre')
+        poblacion = request.args.get('poblacion')
         return addBanda(nombre,poblacion)
     
 def addBanda(nombre,poblacion):
     con = connection()
     c= auxMethods.getCursor(con)
-    query = 'SELECT nombre FROM Banda'
+    query = 'SELECT nombre FROM Bandas'
     c.execute(query)
     for record in c:
         if (record['nombre'] == nombre):
             data =  "Esta banda ya se encuentra registrada"
             con.close()
-            ret = json.dumps({'data':data, 'error':True})                                              # Check if the user already exists by using the email
+            ret = json.dumps({'data':data, 'ok':False})                                              # Check if the user already exists by using the email
             return ret
 
     id = str(round(time.time()*1000))
-    c.execute('INSERT INTO banda (id_banda, nombre, poblacion) VALUES (%s, %s, %s) ', (id, nombre, poblacion ))
+    c.execute('INSERT INTO Bandas (id_banda, nombre, poblacion) VALUES (%s, %s, %s) ', (id, nombre, poblacion ))
     con.commit()
     con.close()
     data = "Banda añadida correctamente"
-    ret = json.dumps({'data':data, 'error':False})                                              # Check if the user already exists by using the email
+    ret = json.dumps({'data':data, 'ok':True})                                              # Check if the user already exists by using the email
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listMembers', methods=['GET','HEAD'])
@@ -150,7 +151,7 @@ def getUsers():
 def listMembers():
     con = connection()
     c = auxMethods.getCursor(con)
-    c.execute("SELECT id, nombre, apellido1, apellido2,id_instrumento, telefono FROM Miembro")
+    c.execute("SELECT id, nombre, apellido1, apellido2,id_instrumento, telefono FROM Miembros")
     data = c.fetchall()
     c.close()
     ret= json.dumps(data)
@@ -165,7 +166,7 @@ def getBandas():
 def listBandas():
     con = connection()
     c = auxMethods.getCursor(con)
-    c.execute("SELECT * FROM Banda")
+    c.execute("SELECT * FROM Bandas")
     data = c.fetchall()
     c.close()
     ret = json.dumps(data)
@@ -175,21 +176,23 @@ def listBandas():
 @app.route('/join', methods = [ "POST"])
 def joinBanda():    
     if (request.method == "POST"):
-        response = request.data
+        """   response = request.data
         array=json.loads(response.decode('utf-8'))
         idBanda = array.get('id')
-        token = array.get('token')
+        token = array.get('token') """
+        token = request.args.get('token')
+        idBanda = request.args.get('id')
         ret = join (token, idBanda)
         return ret
 
 def join (token,  idBanda):
     con = connection()
     c = auxMethods.getCursor(con)
-    sql  = "SELECT nombre FROM Banda WHERE id_banda = '%s' "%idBanda
+    sql  = "SELECT nombre FROM Bandas WHERE id_banda = '%s' "%idBanda
     c.execute(sql)
     for record in c:
         name = record['nombre']
-        c.execute( "SELECT id_miembro, id_banda FROM miembrobanda WHERE id_miembro =%s AND id_banda = %s  ",(token,idBanda))
+        c.execute( "SELECT id_miembro, id_banda FROM miembro_banda WHERE id_miembro =%s AND id_banda = %s  ",(token,idBanda))
         res= None
         res= c.fetchall()
         if(res):
@@ -198,7 +201,7 @@ def join (token,  idBanda):
             ret = json.dumps(data)
             return ret
         try:
-            sqlInsert = "INSERT INTO miembrobanda (id_miembro,id_banda) VALUES (%s,%s )"
+            sqlInsert = "INSERT INTO miembro_banda (id_miembro,id_banda) VALUES (%s,%s )"
             c.execute(sqlInsert,(token,idBanda))
             con.commit()
             data = "Te has añadido a la banda  "+name+" correctamente"
@@ -207,22 +210,23 @@ def join (token,  idBanda):
             return ret
         except:
              con.close()
-             data = "No se ha podido abandonar la banda"
+             data = "Hubo un error al intentar unirse a esta banda"
              ret = json.dumps(data)
              return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listJoin' , methods =[ "GET"])
 def  joinLister():
     if (request.method == "GET"):
-        response= request.data
+        """ response= request.data
         array = json.loads(response.decode('utf-8'))
-        token = array.get("token")
+        token = array.get("token") """
+        token = request.args.get('token')        
         return listJoin(token)
 
 def  listJoin(token):
     con = connection()
     c = auxMethods.getCursor(con)
-    sql = " select * from banda where id_banda not in (select id_banda from miembrobanda where id_miembro= %s );"
+    sql = " select * from Bandas where id_banda not in (select id_banda from miembro_banda where id_miembro= %s );"
     c.execute( sql,(token,))
     data= c.fetchall()
     c.close()
@@ -232,15 +236,16 @@ def  listJoin(token):
 @app.route('/listLeave' , methods =[ "GET"])
 def leaveLister():
     if (request.method == "GET"):
-        response= request.data
+        """ response= request.data
         array = json.loads(response.decode('utf-8'))
-        token = array.get("token")
+        token = array.get("token") """
+        token = request.args.get('token')
         return listLeave(token)
 
 def  listLeave(token):
     con = connection()
     c = auxMethods.getCursor(con)
-    sql = " select * from banda where id_banda in (select id_banda from miembrobanda where id_miembro= %s );"
+    sql = " select * from Bandas where id_banda in (select id_banda from miembro_banda where id_miembro= %s );"
     c.execute( sql,(token,))
     data= c.fetchall()
     c.close()
@@ -250,17 +255,19 @@ def  listLeave(token):
 @app.route('/leave', methods = [ "POST"])
 def leaveBanda():
     if (request.method  == "POST"):
-        response= request.data
+        """ response= request.data6
         array = json.loads(response.decode('utf-8'))
         idBanda = array.get ("id")
-        token = array.get ("token")
+        token = array.get ("token") """
+        token = request.args.get('token')
+        idBanda = request.args.get('id')
         ret = leave(token,idBanda)
         return ret
 
 def leave(token, idBanda):
     con = connection()
     c = auxMethods.getCursor(con)  
-    query = "DELETE FROM miembrobanda WHERE id_miembro = %s AND id_banda = %s"
+    query = "DELETE FROM miembro_banda WHERE id_miembro = %s AND id_banda = %s"
     try:
         auxMethods.getCursor(con).execute(query, (token, idBanda))
         con.commit()
@@ -278,11 +285,14 @@ def leave(token, idBanda):
 
 def eventRegister():
     if (request.method=='POST'):
-        response= request.data
+        """ response= request.data
         array = json.loads(response.decode('utf-8'))
         nombre = array.get ("nombre")
         ubicacion = array.get("ubicacion")
-        fecha_evento= array.get("fecha_evento")
+        fecha_evento= array.get("fecha_evento") """
+        nombre = request.args.get('nombre')
+        ubicacion= request.args.get('ubicacion')
+        fecha_evento = request.args.get('fecha_evento')
         estado = 0  #only created
         
         return registerEvent(nombre,ubicacion,fecha_evento,estado)
@@ -295,16 +305,15 @@ def registerEvent (nombre,ubicacion,fecha_evento,estado):
     if (c.rowcount!=0):
         con.close()
         data = "Ya existe un evento registrado con este codigo"
-        ret = json.dumps({'data':data, 'error':True})                                              # Check if the event is already registered
+        ret = json.dumps({'data':data, 'ok':False})                                              # Check if the event is already registered
         return ret
-    
-    
+        
     id = str(round(time.time()*1000))
     c.execute('INSERT INTO eventos (id_evento, nombre, ubicacion,fecha_evento,estado) VALUES (%s, %s, %s,%s,%s) ', (id, nombre, ubicacion,fecha_evento,estado ))
     con.commit()
     con.close()
     data = "Evento añadido correctamente"
-    ret = json.dumps({'data':data, 'error':False})
+    ret = json.dumps({'data':data, 'ok':True})
     return ret
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/listEvents', methods=['GET','HEAD'])
@@ -345,8 +354,8 @@ def removeMember():
 
 def rmMember (id):                                                         # Method to remove the user //////////////////////////DONE
     con = connection()
-    sql = "DELETE FROM Miembro WHERE id ='"+str(id)+"'"
-    sql2 = "DELETE FROM miembrobanda WHERE id_miembro ='"+str(id)+"'"
+    sql = "DELETE FROM Miembros WHERE id ='"+str(id)+"'"
+    sql2 = "DELETE FROM miembro_banda WHERE id_miembro ='"+str(id)+"'"
     
     try:
         c  = auxMethods.getCursor(con)
@@ -372,8 +381,8 @@ def removeBanda():
 
 def rmBanda (id):
     con = connection()
-    sql = "DELETE FROM Banda WHERE id_banda ='"+str(id)+"'"
-    sql2 = "DELETE FROM miembrobanda WHERE id_banda ='"+str(id)+"'"
+    sql = "DELETE FROM Bandas WHERE id_banda ='"+str(id)+"'"
+    sql2 = "DELETE FROM miembro_banda WHERE id_banda ='"+str(id)+"'"
     try:
         c  = auxMethods.getCursor(con)
         c.execute(sql)
@@ -412,6 +421,110 @@ def rmEvento (id):
         data = "Hubo un error al tratar de eliminar el evento"  
         ret = json.dumps(data)
         return  ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/addEventRequirement',   methods = ['POST'])
+def registerRequirement():
+    #recibimos el numero max de   instrumentos, el instrumento , el id_evento  al que esta asociado 
+    if (request.method == 'POST'):
+
+        id_evento = request.args.get('id_evento')
+        instrumento = request.args.get ("id_instrumento")
+        num_max = request.args.get("num_max")
+        return insertRequirement(id_evento,instrumento,num_max)
+        
+def insertRequirement(id_evento,instrumento,num_max):
+    
+    con = connection()
+    c = auxMethods.getCursor(con)
+    sql  = "select * from requerimientos_evento where id_evento  ='"+str(id_evento)+"' and id_instrumento   ='"+str(instrumento)+"'"
+    c.execute(sql)
+    if (c.rowcount!=0):
+        con.close()
+        data = "Ya existe un require registrado con este codigo"
+        ret = json.dumps({'data':data, 'ok':False})
+        return ret
+    id = str(round(time.time()*1000)) 
+    sqlInsert= "INSERT INTO requerimientos_evento (id_require, id_evento,id_instrumento,max) values (%s,%s,%s,%s)" 
+    c.execute(sqlInsert, (id,id_evento,instrumento,num_max))
+    con.commit()
+    con.close()
+    data = "El require se ha insertado  correctamente"
+    ret = json.dumps({'data':data, 'ok':True})
+    return ret
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/listRequirementsForEvent', methods = ['GET' , 'HEAD'])
+
+def getRequirementsForEvent():
+    if (request.method == 'GET'):
+        id_evento = request.args.get('id_evento')
+        return  listRequirementsForEvent(id_evento)
+    
+def listRequirementsForEvent(id_evento):
+    con = connection()
+    c = auxMethods.getCursor(con)
+    sql  = "select * from requerimientos_evento where id_evento  ='"+str(id_evento)+"'"  
+    c.execute(sql)
+    data = c.fetchall()
+    c.close()
+    ret = json.dumps(data)
+    return ret  
+#//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/inscribeToEvent', methods = ['POST'])
+
+def addSubscribeToAnEvent():
+        if (request.method == 'POST'):
+            id_evento = request.args.get('id_evento')
+            instrumento = request.args.get ("id_instrumento")
+            id_miembro = request.args.get ("id_miembro")
+            return inscribeToAnEvent(id_evento,instrumento, id_miembro)
+            
+def inscribeToAnEvent(id_evento,instrumento,id_miembro):
+    con = connection()
+    c = auxMethods.getCursor(con)
+    sql= "SELECT * FROM Eventos WHERE id_evento =  '"+str(id_evento)+"'"
+    ret=""
+    data = "Has sido reescrito en el evento correctamente"
+    c.execute (sql)
+    if (c.rowcount ==0):
+        con.close()
+        data = "No existe un evento registrado con este  codigo"
+        ret = json.dumps({'data':data, 'ok':False})
+        return ret
+    sql = "SELECT * FROM eventos_miembro_inscritos where id_instrumento = '"+str(instrumento)+"' and id_evento = '"+str(id_evento)+"'"
+    c.execute (sql)
+    if (c.rowcount !=0):
+        con.close()
+        data = "Ya estas inscrito en este evento"
+        ret = json.dumps({'data':data, 'ok':False})
+        return ret
+    sql= "SELECT actual,max from requerimientos_evento where id_instrumento = '"+str(instrumento)+"' and id_evento = '"+str(id_evento)+"'"
+    c.execute(sql)
+    ret = c.fetchall()
+    max = ret[0]['max']
+    actual = ret[0]['actual']
+    print (actual)
+    print (max)
+    if (actual == max):
+        con.close()
+        data = "El requerimiento para este evento respecto a este instrumento está ya completo"
+        ret = json.dumps({'data':data, 'ok':False})
+        return ret    
+    sql= "SELECT * FROM Miembros WHERE nif =  '"+str(id_miembro)+"' and id_instrumento = '"+str(instrumento)+"'"
+    c.execute (sql)
+    if (c.rowcount ==0):
+        con.close()
+        data = "El usuario no tiene asignado este instrumento"
+        ret = json.dumps({'data':data, 'ok':False})
+        return ret
+    sqlInsert = "INSERT INTO  eventos_miembro_inscritos (id_evento, id_miembro,id_instrumento) VALUES    (%s,%s,%s)"
+    c.execute(sqlInsert,(id_evento,id_miembro,instrumento))
+    actual =  actual+1
+    sqlUpdate = "UPDATE requerimientos_evento SET ACTUAL  ='"+str(actual)+"'where id_instrumento = '"+str(instrumento)+"' and id_evento = '"+str(id_evento)+"'" 
+    c.execute(sqlUpdate)
+    con.commit()
+    con.close()
+    ret = json.dumps({'data':data, 'ok':False})
+    return ret 
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if __name__=='__main__':
 	app.run(debug=True, host="127.0.0.1")
