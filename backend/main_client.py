@@ -92,7 +92,7 @@ def registerUser():
 
 			return render_template('addUser.html', json=data,ok=ok )  # Added param ok message to retrieve the ok message from the server in the html
 		return render_template('addUser.html', json=data, ok=ok)
-		
+
 #/////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/addBanda', methods =["GET", "POST"])
 def registerBanda():

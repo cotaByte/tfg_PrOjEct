@@ -1,3 +1,6 @@
  //TODO # MyIssues
 /opt/bin/intellij/bin/idea.sh
-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
+https://codinglatte.com/posts/angular/responsive-navbar-angular-flex-layout/
+https://mdbootstrap.com/docs/angular/navigation/navbar/#
+
+
