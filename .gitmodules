@@ -1,0 +1,3 @@
+[submodule "AngularXarangApp"]
+	path = AngularXarangApp
+	url = https://github.com/palmaAvenger/AngularXarangApp.git
