@@ -47,12 +47,7 @@ def greetings():
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        """ 
-        Forma  vieja de realizar el decode del json recibido por el json
-        response = request.data
-        array=json.loads(response.decode('utf-8'))
-        nif= array.get('nif')
-        pin= array.get('pin')  """
+
         nif = request.args.get('nif')
         pin = request.args.get('pin')
         ret = login(nif, pin)
@@ -68,11 +63,11 @@ def login(nif, pin):  # Method to log in on de website
     for record in c:
         if (record['nif'] == int(nif) and str(record['pin']) == str(pin)):
             token = record['id']
-            ret = json.dumps(token)
+            ret = json.dumps({'token': token, 'ok': True})
             # with the return here, the loop stops when it smash the match (no innecesary iterations)
             return ret
     con.close()
-    ret = json.dumps(token)
+    ret = json.dumps({'ok': False})
     return ret
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -80,16 +75,7 @@ def login(nif, pin):  # Method to log in on de website
 @app.route('/addMiembro', methods=["POST"])
 def registerUser():
     if (request.method == "POST"):
-        """ response = request.data
-        array=json.loads(response.decode('utf-8'))
-        nif= array.get('nif')
-        nombre=array.get('nombre') 
-        apellido1=array.get('apellido1')
-        apellido2=array.get('apellido2')
-        instrumento=array.get('instrumento')    
-        director = array.get('director')
-        banda = array.get('banda')
-        tlf=  array.get('tlf')"""
+
         nif = request.args.get('nif')
         nombre = request.args.get('nombre')
         apellido1 = request.args.get('apellido1')
@@ -120,8 +106,8 @@ def addUser(nif, nombre, apellido1, apellido2, instrumento, director, banda, tlf
     def id(a): return str(round(time.time()*1000)
                           ) if director == 0 else str(round(time.time()*1000))+"D"
     # Get timestamp for the id of the user
-    c.execute('INSERT INTO Miembros (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, id_banda, director, pin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s,%s,%s)', (id(
-        director), int(nif), nombre, apellido1, apellido2, int(instrumento), int(tlf), banda, director, int(pin)))
+    c.execute('INSERT INTO Miembros (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, director, pin) VALUES (%s, %s, %s, %s, %s, %s, %s,%s,%s)', (id(
+        director), nif, nombre, apellido1, apellido2, instrumento, tlf, director, pin))
     con.commit()
     con.close()
     data = "Miembro añadido correctamente"
@@ -134,10 +120,6 @@ def addUser(nif, nombre, apellido1, apellido2, instrumento, director, banda, tlf
 @app.route('/addBanda', methods=["POST"])
 def registerBanda():
     if (request.method == "POST"):
-        """ response= request.data
-        array=json.loads(response.decode('utf-8'))
-        nombre= array.get('nombre')
-        poblacion = array.get('poblacion') """
         nombre = request.args.get('nombre')
         poblacion = request.args.get('poblacion')
         return addBanda(nombre, poblacion)
@@ -208,10 +190,6 @@ def listBandas():
 @app.route('/join', methods=["POST"])
 def joinBanda():
     if (request.method == "POST"):
-        """   response = request.data
-        array=json.loads(response.decode('utf-8'))
-        idBanda = array.get('id')
-        token = array.get('token') """
         token = request.args.get('token')
         idBanda = request.args.get('id')
         ret = join(token, idBanda)
@@ -253,9 +231,6 @@ def join(token,  idBanda):
 @app.route('/listJoin', methods=["GET"])
 def joinLister():
     if (request.method == "GET"):
-        """ response= request.data
-        array = json.loads(response.decode('utf-8'))
-        token = array.get("token") """
         token = request.args.get('token')
         return listJoin(token)
 
@@ -275,9 +250,6 @@ def listJoin(token):
 @app.route('/listLeave', methods=["GET"])
 def leaveLister():
     if (request.method == "GET"):
-        """ response= request.data
-        array = json.loads(response.decode('utf-8'))
-        token = array.get("token") """
         token = request.args.get('token')
         return listLeave(token)
 
@@ -297,10 +269,6 @@ def listLeave(token):
 @app.route('/leave', methods=["POST"])
 def leaveBanda():
     if (request.method == "POST"):
-        """ response= request.data6
-        array = json.loads(response.decode('utf-8'))
-        idBanda = array.get ("id")
-        token = array.get ("token") """
         token = request.args.get('token')
         idBanda = request.args.get('id')
         ret = leave(token, idBanda)
@@ -326,14 +294,9 @@ def leave(token, idBanda):
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-@app.route('/addEvent', methods=['POST'])
+@app.route('/addEvento', methods=['POST'])
 def eventRegister():
     if (request.method == 'POST'):
-        """ response= request.data
-        array = json.loads(response.decode('utf-8'))
-        nombre = array.get ("nombre")
-        ubicacion = array.get("ubicacion")
-        fecha_evento= array.get("fecha_evento") """
         nombre = request.args.get('nombre')
         ubicacion = request.args.get('ubicacion')
         fecha_evento = request.args.get('fecha_evento')
@@ -365,7 +328,7 @@ def registerEvent(nombre, ubicacion, fecha_evento, estado):
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-@app.route('/listEvents', methods=['GET', 'HEAD'])
+@app.route('/listEventos', methods=['GET', 'HEAD'])
 def getEvents():
     if (request.method == 'GET'):
         return listEvents()
@@ -487,7 +450,7 @@ def rmEvento(id):
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-@app.route('/addEventRequirement',   methods=['POST'])
+@app.route('/addEventoRequerimiento',   methods=['POST'])
 def registerRequirement():
     # recibimos el numero max de   instrumentos, el instrumento , el id_evento  al que esta asociado
     if (request.method == 'POST'):
@@ -496,8 +459,7 @@ def registerRequirement():
         instrumento = request.args.get("id_instrumento")
         num_max = request.args.get("num_max")
         return insertRequirement(id_evento, instrumento, num_max)
-
-
+        
 def insertRequirement(id_evento, instrumento, num_max):
 
     con = connection()
@@ -603,9 +565,16 @@ def inscribeToAnEvent(id_evento, instrumento, id_miembro):
     ret = json.dumps({'data': data, 'ok': False})
     return ret
 
+# TODO añadir un metod para updatear el estado de un evento:
+#   |_  estado 0: creado
+#   |_  estado 1: cursado cierre manual por parte del director
+#   |_  estado 2: evento  cancelado
 
+
+# TODO removeRequerimiento
+# TODO desInscribe2Event
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if __name__ == '__main__':
-    #app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc')
+    # app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc') => Parametro para utilizar https:// Need certifcate
     app.run(debug=True, host="127.0.0.1")
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
