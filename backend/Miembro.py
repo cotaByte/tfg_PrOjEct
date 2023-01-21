@@ -38,14 +38,14 @@ def add_user(nif, nombre, apellido1, apellido2, instrumento, director, tlf, pin)
             # Check if the user already exists by using the email
             ret = json.dumps({'msg': data, 'ok': False})
             return ret
-
+    print("no entra")
     # Get timestamp for the id of the user
-    def id(a): return str(round(time.time()*1000)
-                          ) if a == False else str(round(time.time()*1000))+"D"
-    print(id(director) + "\n")
+    def id(a): return str(round(time.time()*1000)) if a == False else str(round(time.time()*1000))+"D"
     try:
-        c.execute('INSERT INTO Miembros (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES (%s, %s, %s, %s, %s, %s,%s,%s)', (id(
-            director), nif, nombre, apellido1, apellido2, instrumento, tlf, pin))
+        id_miembro =  id(director)
+        sql= f"INSERT INTO Miembros (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES ('{id_miembro}', {nif}, '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},{pin})"
+        print(sql)
+        c.execute(sql)
         con.commit()
         data = "Miembro añadido correctamente"
         ok = True
@@ -81,5 +81,5 @@ def rm_member(id):
         ret = json.dumps({'msg':data , 'ok':True})
     except:
         data = "Hubo un error al tratar de eliminar el miembro"
-        ret = json.dumps({'msg':data , 'ok':True})
+        ret = json.dumps({'msg':data , 'ok':False})
     return ret

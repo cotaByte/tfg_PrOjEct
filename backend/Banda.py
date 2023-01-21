@@ -127,4 +127,3 @@ def rm_banda(id):
         data = "Hubo un error al tratar de eliminar la banda"
         ret = json.dumps({'msg':data , 'ok':False})
         return ret
-

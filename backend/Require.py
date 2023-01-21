@@ -1,7 +1,7 @@
 import Utilidades
 import json
 import time
-
+    
 def insert_requirement(id_evento, instrumento, num_max):
 
     con = Utilidades.set_connection()
@@ -29,7 +29,7 @@ def insert_requirement(id_evento, instrumento, num_max):
 def list_requirements_for_event(id_miembro,id_evento):
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    sql = f"select * from requerimientos_evento where id_evento  ='{id_evento}'"
+    sql = f"select req.*, ins.nombre  as nombre_instrumento from requerimientos_evento req inner join instrumentos ins on ins.id_instrumento = req.id_instrumento where req.id_evento  ='{id_evento}'"
     inscrito = Utilidades.esta_miembro_inscrito_en_evento(id_miembro,id_evento)
     c.execute(sql)
     data = c.fetchall()

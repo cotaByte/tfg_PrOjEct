@@ -94,7 +94,6 @@ def check_token (token):
     con =set_connection()
     c = get_cursor(con)
     sql = f"SELECT * FROM Miembros where id = '{token}'"
-    print (sql)
     c.execute(sql)
     if (c.rowcount!=0):
         msg= 'El usuario existe'
