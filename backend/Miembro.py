@@ -3,11 +3,11 @@ import json
 import time
 
 
-def login(nif, pin):  # Method to log in on  website
+def login(dni, pin):  # Method to log in on  website
     token = None
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    query = f'SELECT id, nif, pin,id_instrumento FROM Miembros where nif= {nif} and pin= {pin} limit 1'
+    query = f"SELECT id, dni, pin,id_instrumento FROM Miembros where dni= '{dni}' and pin = {pin} limit 1"
     c.execute(query)
 
     if (c.rowcount == 0):
@@ -16,7 +16,7 @@ def login(nif, pin):  # Method to log in on  website
         return ret
     else:
         for record in c:
-            if (record['nif'] == int(nif) and str(record['pin']) == str(pin)):
+            if (record['dni'] == dni and str(record['pin']) == str(pin)):
                 token = record['id']
                 id_insturmento = record['id_instrumento']
                 nombre = Utilidades.get_full_nombre_miembro(token)
@@ -26,24 +26,23 @@ def login(nif, pin):  # Method to log in on  website
                 return ret
 
 
-def add_user(nif, nombre, apellido1, apellido2, instrumento, director, tlf, pin):
+def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin):
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     query = 'SELECT nif FROM Miembros'
     c.execute(query)
     for record in c:
-        if (record['nif'] == nif):
+        if (record['dni'] == dni):
             data = "El usuario ya existe"
             con.close()
             # Check if the user already exists by using the email
             ret = json.dumps({'msg': data, 'ok': False})
             return ret
-    print("no entra")
     # Get timestamp for the id of the user
     def id(a): return str(round(time.time()*1000)) if a == False else str(round(time.time()*1000))+"D"
     try:
         id_miembro =  id(director)
-        sql= f"INSERT INTO Miembros (id, nif, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES ('{id_miembro}', {nif}, '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},{pin})"
+        sql= f"INSERT INTO Miembros (id,dni, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES ('{id_miembro}', {dni}, '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},{pin})"
         print(sql)
         c.execute(sql)
         con.commit()
@@ -61,7 +60,7 @@ def add_user(nif, nombre, apellido1, apellido2, instrumento, director, tlf, pin)
 def list_miembros(id):
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    sql = f"SELECT id,nif,nombre,apellido1,apellido2,id_instrumento, telefono FROM Miembros where id <>'{id}'"
+    sql = f"SELECT m.id,m.nif,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono FROM Miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento where m.id <>'{id}'"
     c.execute(sql)
     ret = json.dumps(c.fetchall())
     con.close()

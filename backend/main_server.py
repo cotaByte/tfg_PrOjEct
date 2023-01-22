@@ -16,7 +16,7 @@ host = "localhost"  # Cambiar al crear el contenedor de docker
 def login():
     if request.method == "POST":
 
-        nif = request.args.get('nif')
+        nif = request.args.get('dni' )
         pin = request.args.get('pin')
         ret = Miembro.login(nif, pin)
         return ret
@@ -24,7 +24,7 @@ def login():
 @app.route('/addMiembro', methods=["POST"])
 def register_user():
     if (request.method == "POST"):
-        nif = request.args.get('nif')
+        dni = request.args.get('dni')
         nombre = request.args.get('nombre')
         apellido1 = request.args.get('apellido1')
         apellido2 = request.args.get('apellido2')
@@ -32,7 +32,7 @@ def register_user():
         director = True if request.args.get('director')=='true' else False
         tlf = request.args.get('telefono')
         pin = request.args.get('pin')
-        return Miembro.add_user(nif, nombre, apellido1, apellido2, instrumento, director,tlf, pin)
+        return Miembro.add_user(dni, nombre, apellido1, apellido2, instrumento, director,tlf, pin)
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/addBanda', methods=["POST"])
 def register_banda():
