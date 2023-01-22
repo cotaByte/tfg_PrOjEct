@@ -16,9 +16,9 @@ host = "localhost"  # Cambiar al crear el contenedor de docker
 def login():
     if request.method == "POST":
 
-        nif = request.args.get('dni' )
+        dni = request.args.get('dni' )
         pin = request.args.get('pin')
-        ret = Miembro.login(nif, pin)
+        ret = Miembro.login(dni, pin)
         return ret
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/addMiembro', methods=["POST"])

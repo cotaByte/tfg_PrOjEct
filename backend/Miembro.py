@@ -29,7 +29,7 @@ def login(dni, pin):  # Method to log in on  website
 def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin):
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    query = 'SELECT nif FROM Miembros'
+    query = 'SELECT dni FROM Miembros'
     c.execute(query)
     for record in c:
         if (record['dni'] == dni):
@@ -42,7 +42,7 @@ def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin)
     def id(a): return str(round(time.time()*1000)) if a == False else str(round(time.time()*1000))+"D"
     try:
         id_miembro =  id(director)
-        sql= f"INSERT INTO Miembros (id,dni, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES ('{id_miembro}', {dni}, '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},{pin})"
+        sql= f"INSERT INTO Miembros (id,dni, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES ('{id_miembro}', '{dni}', '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},{pin})"
         print(sql)
         c.execute(sql)
         con.commit()
@@ -60,7 +60,7 @@ def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin)
 def list_miembros(id):
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    sql = f"SELECT m.id,m.nif,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono FROM Miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento where m.id <>'{id}'"
+    sql = f"SELECT m.id,m.dni,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono FROM Miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento where m.id <>'{id}'"
     c.execute(sql)
     ret = json.dumps(c.fetchall())
     con.close()
