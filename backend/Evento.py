@@ -75,8 +75,9 @@ def inscribe_to_an_event( id_miembro, id_require,id_evento):
         con.close()
         return ret
     sql = f"SELECT * from requerimientos_evento where id_require = '{id_require}' and id_evento = '{id_evento}' and actual=max"
+    print(sql)
     c.execute(sql)
-    if (c.rowcount!=1): #si el requerimiento ya esta a full o no
+    if (c.rowcount!=0): #si el requerimiento ya esta a full o no
         data = "El requerimiento para este evento respecto a este instrumento está ya completo"
         ret = json.dumps({'msg': data, 'ok': False})
         con.close()
@@ -129,13 +130,13 @@ def desinscribe_for_event(id_req,token):
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql =f"delete from eventos_miembro_inscritos where id_require= '{id_req}' and id_miembro ='{token}';"
-    sql1 = f"update requerimientos_evento set actual=actual-1 where id_require ='{id_req}';"
+    sql += f"update requerimientos_evento set actual=actual-1 where id_require ='{id_req}';"
     try:
         c.execute(sql)
         msg= 'Te has desinscrito del evento'
         ok= True
     except:
-        msg= 'El requerimiento no pudo borrarse correctamente'
+        msg= 'Hubo un error al tratar de desinscribirse del evento'
         ok= False
     ret = json.dumps({'msg': msg , 'ok':ok})
     con.commit()
