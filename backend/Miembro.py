@@ -11,7 +11,8 @@ def login(dni, pin):  # Method to log in on  website
     c.execute(query)
 
     if (c.rowcount == 0):
-        ret = json.dumps({'ok': False})
+        msg = 'Credenciales incorrectas'
+        ret = json.dumps({'ok': False, 'msg':msg})
         con.close()
         return ret
     else:
