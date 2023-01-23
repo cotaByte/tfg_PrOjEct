@@ -4,6 +4,13 @@ import time
 
 
 def add_banda(nombre, poblacion):
+    """Añade una banda a la BD
+    Args:
+        nombre (string)
+        poblacion (string)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     query = 'SELECT nombre FROM Bandas'
@@ -32,15 +39,26 @@ def add_banda(nombre, poblacion):
 
 
 def list_bandas():
+    """Devuelve el listado de las  bandas que existen
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    c.execute("SELECT * FROM Bandas")
+    c.execute("SELECT * FROM Bandas order by id_banda desc")
     data = c.fetchall()
     c.close()
     return json.dumps(data) 
 
 
 def join(token,  id_banda):
+    """Une un miembro y una banda
+    Args:
+        token (String)
+        id_banda (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f"SELECT nombre FROM Bandas WHERE id_banda = '{id_banda}' "
@@ -69,6 +87,12 @@ def join(token,  id_banda):
 
 
 def list_join(token):
+    """Lista las bandas disponibles para unirse
+    Args:
+        token (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f" select * from Bandas where id_banda not in (select id_banda from miembro_banda where id_miembro= '{token}' );"
@@ -80,6 +104,12 @@ def list_join(token):
 
 
 def list_leave(token):
+    """Lista las bandas disponibles para abandonar
+    Args:
+        token (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f" select * from Bandas where id_banda in (select id_banda from miembro_banda where id_miembro= '{token}' );"
@@ -91,6 +121,13 @@ def list_leave(token):
 
 
 def leave(token, id_banda):
+    """Elimina a un miembro que estaba unido a una banda
+    Args:
+        token (String)
+        id_banda (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f"SELECT nombre FROM Bandas WHERE id_banda = '{id_banda}' " 
@@ -112,6 +149,12 @@ def leave(token, id_banda):
 
 
 def rm_banda(id):
+    """Elimina una banda de la  BD
+    Args:
+        id (string): id de la banda
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     sql = f"DELETE FROM Bandas WHERE id_banda ='{id}';"
     sql += f"DELETE FROM miembro_banda WHERE id_banda ='{id}';"

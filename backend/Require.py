@@ -3,7 +3,14 @@ import json
 import time
     
 def insert_requirement(id_evento, instrumento, num_max):
-
+    """Inserta un requerimiento en la BD
+    Args:
+        id_evento (String)
+        instrumento (Int)
+        num_max (Int)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = "select * from requerimientos_evento where id_evento  ='" + \
@@ -27,6 +34,13 @@ def insert_requirement(id_evento, instrumento, num_max):
 
 
 def list_requirements_for_event(id_miembro,id_evento):
+    """Devuelve todos los requires de un evento
+    Args:
+        id_miembro (string)
+        id_evento (string)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f"select req.*, ins.nombre  as nombre_instrumento from requerimientos_evento req inner join instrumentos ins on ins.id_instrumento = req.id_instrumento where req.id_evento  ='{id_evento}' order by ins.id_instrumento desc"
@@ -38,6 +52,12 @@ def list_requirements_for_event(id_miembro,id_evento):
     return ret
 
 def remove_requerimiento(id_req):
+    """Elimina un requerimiento de la BD
+    Args:
+        id_req (string)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql =f"delete from requerimientos_evento where id_require= '{id_req}'"

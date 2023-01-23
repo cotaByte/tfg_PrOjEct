@@ -3,7 +3,14 @@ import json
 import time
 
 
-def login(dni, pin):  # Method to log in on  website
+def login(dni, pin):  
+    """Funcion para logearse en la aplicación
+    Args:
+        dni (string) 
+        pin (number)
+    Returns:
+        JSON
+    """
     token = None
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
@@ -28,6 +35,19 @@ def login(dni, pin):  # Method to log in on  website
 
 
 def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin):
+    """Añade un miembro a la base de datos
+    Args:
+        dni (string): _description_
+        nombre (string): _description_
+        apellido1 (string): _description_
+        apellido2 (string): _description_
+        instrumento (int): _description_
+        director (boolean): _description_
+        tlf (int): _description_
+        pin (int): _description_
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     query = 'SELECT dni FROM Miembros'
@@ -59,6 +79,12 @@ def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin)
 
 
 def list_miembros(id):
+    """Lista todos los miembros de la BD
+    Args:
+        id (string)
+    Returns:
+      JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f"SELECT m.id,m.dni,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono FROM Miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento where m.id <>'{id}'"
@@ -69,6 +95,12 @@ def list_miembros(id):
 
 
 def rm_member(id):
+    """Elimina  un miembro de la BD
+    Args:
+        id (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     sql = f"DELETE FROM Miembros WHERE id ='{id}';"
     sql += f"DELETE FROM miembro_banda WHERE id_miembro ='{id}';"

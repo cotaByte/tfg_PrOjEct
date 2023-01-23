@@ -4,6 +4,15 @@ import time
 
 
 def register_event(nombre, ubicacion, fecha_evento, estado):
+    """Añade un evento a la BD
+    Args:
+        nombre (String): _description_
+        ubicacion (String): _description_
+        fecha_evento (Date): _description_
+        estado (Int): 1 si esta cerrado | 0 si esta operativo
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql = f"SELECT nombre FROM eventos WHERE nombre = '{nombre}'" 
@@ -28,9 +37,13 @@ def register_event(nombre, ubicacion, fecha_evento, estado):
     return ret
 
 def list_events():
+    """Lista todos los eventos activos
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    c.execute("SELECT * FROM Eventos")
+    c.execute("SELECT * FROM Eventos WHERE estado <> 0")
     data= c.fetchall()
     c.close()
     ret = json.dumps(data)
@@ -38,6 +51,12 @@ def list_events():
 
 
 def rm_evento(id):
+    """Elimina un evento de la BD (Ojo!! Controlamos el borrado en cascada)
+    Args:
+        id (String):  id del evento a borrar
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     try:
         sql = f"DELETE FROM Eventos WHERE id_evento ='{id}';"
@@ -57,6 +76,14 @@ def rm_evento(id):
 
 
 def inscribe_to_an_event( id_miembro, id_require,id_evento): 
+    """Insribirse en un evento
+    Args:
+        id_miembro (String)
+        id_require (String)
+        id_evento (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     ret = ""
@@ -111,6 +138,12 @@ def inscribe_to_an_event( id_miembro, id_require,id_evento):
 
 
 def close_event(id_evento):
+    """Cerrar el evento
+    Args:
+        id_evento (String)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql= f"update eventos set estado = 1 where id_evento = '{id_evento}' "
@@ -127,6 +160,13 @@ def close_event(id_evento):
 
 
 def desinscribe_for_event(id_req,token):
+    """Desinscribe un miembro de un require
+    Args:
+        id_req (String)
+        token (Stirng)
+    Returns:
+        JSON
+    """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
     sql =f"delete from eventos_miembro_inscritos where id_require= '{id_req}' and id_miembro ='{token}';"
