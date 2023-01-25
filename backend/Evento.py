@@ -43,7 +43,7 @@ def list_events():
     """
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    c.execute("SELECT * FROM Eventos WHERE estado <> 0")
+    c.execute("SELECT * FROM Eventos WHERE estado <> 1")
     data= c.fetchall()
     c.close()
     ret = json.dumps(data)
