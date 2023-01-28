@@ -131,7 +131,7 @@ def check_token (token):
     Returns:
         json: Objeto JSON con la comprobación
     """
-    if (len(token)<13):
+    if (len(token)<10):
         msg= 'La longitud del token no es correcta'
         valid= False
         ret = json.dumps({'msg': msg , 'valid':valid})
