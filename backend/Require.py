@@ -34,7 +34,8 @@ def insert_requirement(id_evento, instrumento, num_max):
 
 
 def list_requirements_for_event(id_miembro,id_evento):
-    """Devuelve todos los requires de un evento
+    """Devuelve todos los requires de un evento,ademas del nombre del evento 
+       y si el miembro esta inscrito o no
     Args:
         id_miembro (string)
         id_evento (string)
@@ -47,8 +48,9 @@ def list_requirements_for_event(id_miembro,id_evento):
     inscrito = Utilidades.esta_miembro_inscrito_en_evento(id_miembro,id_evento)
     c.execute(sql)
     data = c.fetchall()
+    nombre_evento = Utilidades.getNombreEvento(id_evento)
     c.close()
-    ret = json.dumps({'data': data, 'inscrito': inscrito})
+    ret = json.dumps({'data': data, 'inscrito': inscrito , 'nombre_evento':nombre_evento})
     return ret
 
 def remove_requerimiento(id_req):

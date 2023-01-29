@@ -166,3 +166,13 @@ def is_event_active(id_evento):
     c.execute(sql)
     estado = c.fetchone['estado']
     return True if estado ==0 else False
+
+
+
+def getNombreEvento(id_evento):
+    con = set_connection()
+    c = get_cursor(con)
+    sql =f"SELECT nombre from eventos where id_evento='{id_evento}'"
+    c.execute(sql)
+    nombre = c.fetchone()['nombre']
+    return  nombre
