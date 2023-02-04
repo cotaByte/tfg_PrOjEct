@@ -162,6 +162,13 @@ def event_desinscriber():
         token = request.args.get('id_miembro')
         return Evento.desinscribe_for_event(id_req, token)
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/getEventosByMiembro', methods=['GET'])
+def get_eventos_by_miembro():
+    if (request.method=='GET'):
+        token = request.args.get('id_miembro')
+        return Evento.get_eventos_by_miembro(token)
+
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if  __name__ == '__main__':
     #app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc') => Parametro para utilizar https:// Need certifcate
     app.run(debug=True, host="127.0.0.1")

@@ -182,3 +182,14 @@ def desinscribe_for_event(id_req,token):
     con.commit()
     con.close()
     return ret
+
+
+def get_eventos_by_miembro(token):
+    con = Utilidades.set_connection()
+    c = Utilidades.get_cursor(con)
+    sql= f"select * from eventos where id_evento in (select id_evento from eventos_miembro_inscritos where id_miembro = '{token}')"
+    c.execute(sql)
+    data= c.fetchall()
+    c.close()
+    ret = json.dumps(data)
+    return ret
