@@ -1,5 +1,3 @@
-from crypt import methods
-from ctypes.wintypes import PINT
 from _thread import *
 import  Utilidades
 from flask import Flask, request
@@ -17,8 +15,8 @@ def login():
     if request.method == "POST":
 
         dni = request.args.get('dni' )
-        pin = request.args.get('pin')
-        ret = Miembro.login(dni, pin)
+        pwd = request.args.get('pwd')
+        ret = Miembro.login(dni, pwd)
         return ret
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/addMiembro', methods=["POST"])
@@ -31,8 +29,8 @@ def register_user():
         instrumento = request.args.get('instrumento')
         director = True if request.args.get('director')=='true' else False
         tlf = request.args.get('telefono')
-        pin = request.args.get('pin')
-        return Miembro.add_user(dni, nombre, apellido1, apellido2, instrumento, director,tlf, pin)
+        pwd = request.args.get('pwd')
+        return Miembro.add_user(dni, nombre, apellido1, apellido2, instrumento, director,tlf, pwd)
 # /////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/addBanda', methods=["POST"])
 def register_banda():

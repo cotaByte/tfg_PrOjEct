@@ -3,18 +3,18 @@ import json
 import time
 
 
-def login(dni, pin):  
+def login(dni, pwd):  
     """Funcion para logearse en la aplicación
     Args:
         dni (string) 
-        pin (number)
+        pwd (string)
     Returns:
         JSON
     """
     token = None
     con = Utilidades.set_connection()
     c = Utilidades.get_cursor(con)
-    query = f"SELECT id, dni, pin,id_instrumento FROM Miembros where dni= '{dni}' and pin = {pin} limit 1"
+    query = f"SELECT id, dni, pwd,id_instrumento FROM Miembros where dni= '{dni}' and pwd = '{pwd}' limit 1"
     c.execute(query)
 
     if (c.rowcount == 0):
@@ -24,7 +24,7 @@ def login(dni, pin):
         return ret
     else:
         for record in c:
-            if (record['dni'] == dni and str(record['pin']) == str(pin)):
+            if (record['dni'] == dni and str(record['pwd']) == pwd):
                 token = record['id']
                 id_insturmento = record['id_instrumento']
                 nombre = Utilidades.get_full_nombre_miembro(token)
@@ -34,17 +34,17 @@ def login(dni, pin):
                 return ret
 
 
-def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin):
+def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pwd):
     """Añade un miembro a la base de datos
     Args:
-        dni (string): _description_
-        nombre (string): _description_
-        apellido1 (string): _description_
-        apellido2 (string): _description_
-        instrumento (int): _description_
-        director (boolean): _description_
-        tlf (int): _description_
-        pin (int): _description_
+        dni (string): 
+        nombre (string): 
+        apellido1 (string):
+        apellido2 (string):
+        instrumento (int): 
+        director (boolean): 
+        tlf (int): 
+        pwd(string): 
     Returns:
         JSON
     """
@@ -63,7 +63,7 @@ def add_user(dni, nombre, apellido1, apellido2, instrumento, director, tlf, pin)
     def id(a): return str(round(time.time()*1000)) if a == False else str(round(time.time()*1000))+"D"
     try:
         id_miembro =  id(director)
-        sql= f"INSERT INTO Miembros (id,dni, nombre, apellido1, apellido2, id_instrumento, telefono, pin) VALUES ('{id_miembro}', '{dni}', '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},{pin})"
+        sql= f"INSERT INTO Miembros (id,dni, nombre, apellido1, apellido2, id_instrumento, telefono, pwd) VALUES ('{id_miembro}', '{dni}', '{nombre}', '{apellido1}','{apellido2}',{instrumento},{tlf},'{pwd}')"
         print(sql)
         c.execute(sql)
         con.commit()

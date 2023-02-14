@@ -5,6 +5,7 @@ from _thread import *
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from datetime import datetime
+import hashlib
 
 def get_cursor(conn):
     """Metodo que devuelve un cursor apuntando a la base de datos
@@ -176,3 +177,5 @@ def getNombreEvento(id_evento):
     c.execute(sql)
     nombre = c.fetchone()['nombre']
     return  nombre
+
+
