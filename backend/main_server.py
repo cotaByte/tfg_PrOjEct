@@ -7,7 +7,6 @@ import Evento,Miembro,Banda,Require
 # CORS: Permitirá recibir requests externas a una app flask.
 app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
-host = "localhost"  # Cambiar al crear el contenedor de docker
 
 # ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 @app.route('/login', methods=["GET", "POST"])
@@ -170,4 +169,5 @@ def get_eventos_by_miembro():
 if  __name__ == '__main__':
     #app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc') => Parametro para utilizar https:// Need certifcate
     app.run(debug=True, host="127.0.0.1")
+    #app.run(debug=True, host="172.20.0.3") para despliegue en prod
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
