@@ -193,3 +193,16 @@ def get_eventos_by_miembro(token):
     c.close()
     ret = json.dumps(data)
     return ret
+
+def get_miembros_by_evento(id_evento):
+    con= Utilidades.set_connection()
+    c= Utilidades.get_cursor(con)
+    sql=f"select  m.id,m.dni,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono from miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento inner join eventos_miembro_inscritos mei on mei.id_miembro=m.id and mei.id_evento='{id_evento}'"
+    c.execute(sql)
+    data= c.fetchall()
+    sql=f"select nombre from eventos where id_evento='{id_evento}'"
+    c.execute(sql)
+    nombre_evento=c.fetchone()
+    c.close()
+    ret = json.dumps({'data': data ,'nombre_evento':nombre_evento })
+    return ret

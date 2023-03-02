@@ -166,6 +166,12 @@ def get_eventos_by_miembro():
         return Evento.get_eventos_by_miembro(token)
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/getMiembrosByEvento' , methods=['GET'])
+def get_miembros_by_evento():
+    if(request.method=='GET'):
+        id_evento= request.args.get('id_evento')
+        return Evento.get_miembros_by_evento(id_evento)
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if  __name__ == '__main__':
     #app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc') => Parametro para utilizar https:// Need certifcate
     app.run(debug=True, host="127.0.0.1")
