@@ -1,6 +1,6 @@
 #!/bin/bash
-
-echo "actualizando repositorio backend =>$(date)";
+echo "==========================================================================="
+echo "actualizando repositorio backend => $(date)";
 git pull -v --rebase
-echo "repositorio backend actualizado =>$(date)";
-
+echo "repositorio backend actualizado => $(date)";
+echo "==========================================================================="
