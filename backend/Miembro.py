@@ -115,3 +115,43 @@ def rm_member(id):
         data = "Hubo un error al tratar de eliminar el miembro"
         ret = json.dumps({'msg':data , 'ok':False})
     return ret
+
+
+def get_miembros_by_evento(id_evento):
+    """Devuelve un vector de miembros inscritos en un evento
+    Args:
+        id_evento (String)
+    Returns:
+        JSON
+    """
+    con= Utilidades.set_connection()
+    c= Utilidades.get_cursor(con)
+    sql=f"select  m.id,m.dni,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono from miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento inner join eventos_miembro_inscritos mei on mei.id_miembro=m.id and mei.id_evento='{id_evento}'"
+    c.execute(sql)
+    data= c.fetchall()
+    sql=f"select nombre from eventos where id_evento='{id_evento}'"
+    c.execute(sql)
+    nombre_evento=c.fetchone()
+    c.close()
+    ret = json.dumps({'data': data ,'nombre_evento':nombre_evento })
+    return ret
+
+
+def get_miembros_by_banda(id_banda):
+    """Devuelve un vector de miembros afiliados a una banda
+    Args:
+        id_banda (String)
+    Returns:
+        JSON
+    """
+    con=Utilidades.set_connection()
+    c= Utilidades.get_cursor(con)
+    sql=f"select  m.id,m.dni,m.nombre,m.apellido1,m.apellido2,i.nombre as instrumento, m.telefono from miembros m inner join instrumentos i on i.id_instrumento=m.id_instrumento inner join miembro_banda mb on mb.id_miembro=m.id and mb.id_banda='{id_banda}'"
+    c.execute(sql)
+    data= c.fetchall()
+    sql=f"select nombre from bandas where id_banda='{id_banda}'"
+    c.execute(sql)
+    nombre_banda=c.fetchone()
+    c.close()
+    ret = json.dumps({'data': data ,'nombre_banda':nombre_banda })
+    return ret

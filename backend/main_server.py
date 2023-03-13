@@ -170,7 +170,13 @@ def get_eventos_by_miembro():
 def get_miembros_by_evento():
     if(request.method=='GET'):
         id_evento= request.args.get('id_evento')
-        return Evento.get_miembros_by_evento(id_evento)
+        return Miembro.get_miembros_by_evento(id_evento)
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+@app.route('/getMiembrosByBanda' , methods=['GET'])
+def get_miembros_by_banda():
+    if(request.method=='GET'):
+        id_banda= request.args.get('id_banda')
+        return Miembro.get_miembros_by_banda(id_banda)
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if  __name__ == '__main__':
     #app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc') => Parametro para utilizar https:// Need certifcate
