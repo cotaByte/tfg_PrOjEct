@@ -180,6 +180,6 @@ def get_miembros_by_banda():
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 if  __name__ == '__main__':
     #app.run(debug=True, host="127.0.0.1", ssl_context = 'adhoc') => Parametro para utilizar https:// Need certifcate
-    app.run(debug=True, host="127.0.0.1")
-    #app.run(debug=True, host="172.20.0.3") #para despliegue en prod
+    #app.run(debug=True, host="127.0.0.1")
+    app.run(debug=True, host="172.20.0.3") #para despliegue en prod
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
