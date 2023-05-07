@@ -26,8 +26,8 @@ def set_connection():
     try:
         con = psycopg2.connect(
 
-            #host='localhost',
-            host='172.20.0.4', #para despliegue en prod
+            host='localhost',
+            #host='172.20.0.4', #para despliegue en prod
             user='postgres',
             password='password',
             database='xarangapp'

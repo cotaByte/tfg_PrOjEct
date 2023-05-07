@@ -23,8 +23,8 @@ def add_banda(nombre, poblacion):
             con.close()
             return ret
     id = str(round(time.time()*1000))
-    sql = f"INSERT INTO Banda (id_banda, nombre, poblacion) VALUES ('{id}', '{nombre}', '{poblacion}')"
-    try:          
+    sql = f"INSERT INTO Bandas (id_banda, nombre, poblacion) VALUES ('{id}', '{nombre}', '{poblacion}')"
+    try:
         c.execute(sql)
         con.commit()
         con.close()
